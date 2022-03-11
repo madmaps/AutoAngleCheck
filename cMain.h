@@ -3,6 +3,10 @@
 #include<wx/wx.h>
 #include <opencv2/opencv.hpp>
 #include "imageanalyzer.h"
+#include "renderTimer.h"
+#include "basicDrawPlane.h"
+
+
 
 
 class cMain : public wxFrame
@@ -10,12 +14,12 @@ class cMain : public wxFrame
 public:
     cMain();
     ~cMain();
-private:
-    cv::Mat frame;
-    cv::VideoCapture camera;
-    bool goodCamera;
-    ImageAnalyzer* myImageAnal;
+    void onClose(wxCloseEvent& evt);
 
+private:
+    RenderTimer* timer;
+    BasicDrawPlane* drawPlane;
+    DECLARE_EVENT_TABLE()
 };
 
 #endif // CMAIN_H
