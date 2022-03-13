@@ -4,17 +4,22 @@
 
 BEGIN_EVENT_TABLE(BasicDrawPlane, wxPanel)
 EVT_PAINT(BasicDrawPlane::paintEvent)
+EVT_LEFT_DOWN(BasicDrawPlane::moveCursor)
 END_EVENT_TABLE()
 
 
 BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
 {
     myImageAnal = new ImageAnalyzer();
-    myImageAnal->setAngleRange(270 + 360 , 90 + 360*2);
+    myImageAnal->setAngleRange(360 , 360 * 2);
+    //myImageAnal->setAngleRange(0, 360);
     goodCamera = true;
     camera.open(0);
     camera.set(cv::CAP_PROP_FRAME_WIDTH , 640);
     camera.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    radiusSize = 64;
+    cursorX = 640 / 2;
+    cursorY = 480 / 2;
 
     if(!camera.isOpened())
     {
@@ -27,6 +32,25 @@ void BasicDrawPlane::paintEvent(wxPaintEvent &evt)
     wxPaintDC dc(this);
     render(dc);
 }
+
+void BasicDrawPlane::updateSize(int inSize)
+{
+    myImageAnal->setAnalyzLength(inSize);
+    radiusSize = inSize;
+    paintNow();
+}
+
+void BasicDrawPlane::moveCursor(wxMouseEvent& evt)
+{
+    wxPoint currentPoint = evt.GetPosition();
+    if((int)currentPoint.x + (int)radiusSize < 640 && (int)currentPoint.x - (int)radiusSize > 0 && (int)currentPoint.y + (int)radiusSize < 480 && (int)currentPoint.y - (int)radiusSize > 0)
+    {
+        cursorX = currentPoint.x;
+        cursorY = currentPoint.y;
+        paintNow();
+    }
+}
+
 
 void BasicDrawPlane::paintNow()
 {
@@ -41,7 +65,7 @@ void BasicDrawPlane::render(wxDC& dc)
     camera >> frame;
 
     myImageAnal->setImageData(frame.data,frame.cols,frame.rows);
-    myImageAnal->setPiviotPoint(frame.cols / 2, frame.rows / 2);
+    myImageAnal->setPiviotPoint(cursorX, cursorY);
     wxImage test(frame.cols, frame.rows, frame.data, true);
     dc.DrawBitmap(wxBitmap(test, 24), 0, 0);
     wxPen currentPen;
@@ -52,17 +76,17 @@ void BasicDrawPlane::render(wxDC& dc)
     currentBrush.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
     dc.SetPen(currentPen);
     dc.SetBrush(currentBrush);
-    dc.DrawCircle(frame.cols / 2, frame.rows / 2, 64);
-    dc.DrawLine(frame.cols / 2 - 20 , frame.rows / 2, frame.cols / 2 + 20 , frame.rows / 2);
-    dc.DrawLine(frame.cols / 2, frame.rows / 2 - 20, frame.cols / 2, frame.rows / 2 + 20);
+    dc.DrawCircle(cursorX, cursorY, radiusSize);
+    dc.DrawLine(cursorX - radiusSize / 3 , cursorY, cursorX + radiusSize / 3 , cursorY);
+    dc.DrawLine(cursorX, cursorY - radiusSize / 3, cursorX, cursorY + radiusSize / 3);
 
 
-    drawArc(dc, 44, 60, frame.cols / 2, frame.rows / 2, 64, wxColour(0, 255, 0, 64));
-    drawArc(dc, 40, 44, frame.cols / 2, frame.rows / 2, 64, wxColour(255, 255, 0, 64));
-    drawArc(dc, 60, 64, frame.cols / 2, frame.rows / 2, 64, wxColour(255, 255, 0, 64));
-    drawArc(dc, 64, 40, frame.cols / 2, frame.rows / 2, 64, wxColour(255, 255, 255, 64));
+    drawArc(dc, 44, 60, cursorX, cursorY, radiusSize, wxColour(0, 255, 0, 64));
+    drawArc(dc, 40, 44, cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
+    drawArc(dc, 60, 64, cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
+    drawArc(dc, 64, 40, cursorX, cursorY, radiusSize, wxColour(255, 255, 255, 64));
 
-    drawAngle(dc, myImageAnal->getAngle(),frame.cols / 2, frame.rows / 2, 64, wxColour(0, 0, 0, 255));
+    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize, wxColour(0, 0, 0, 255));
 
 }
 void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor)

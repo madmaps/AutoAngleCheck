@@ -14,7 +14,6 @@ cApp::~cApp()
 bool cApp::OnInit()
 {
     myMainClass = new cMain();
-
     myMainClass->Show();
     return true;
 }

@@ -27,12 +27,19 @@ private:
     float lowAngle;
     float highAngle;
     float angleStep;
+    bool radialSeal;
+    float partDiameter;
+    float partYOffset;
+    float physicalWidth;
+    float physicalHeight;
+
 
     std::vector<unsigned int> getVector(const float inAngle)const;
     std::vector<float> DCT(std::vector<unsigned int>* inData)const;
     unsigned char getPixelValue(const unsigned int inX, const unsigned int inY)const;
     float rotatePoint_X(const float inX, const float inY, const float inAngle)const;
     float rotatePoint_Y(const float inX, const float inY, const float inAngle)const;
+    float correctAngle(float inAngle)const;
 
 
 };

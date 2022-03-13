@@ -15,6 +15,8 @@ ImageAnalyzer::ImageAnalyzer()
     lowAngle = 0;
     highAngle = 360;
     angleStep = 1;
+    partDiameter = 10;
+    partYOffset = 3;
 }
 
 void ImageAnalyzer::setImageData(unsigned char* inNewImage,const unsigned int inWidth, const unsigned int inHeight,const unsigned int inBitDepth)
@@ -27,11 +29,12 @@ void ImageAnalyzer::setImageData(unsigned char* inNewImage,const unsigned int in
 
 void ImageAnalyzer::setPiviotPoint(const unsigned int inPoint_X, const unsigned int inPoint_Y)
 {
-    if(inPoint_X >= 0 && inPoint_X <= imageWidth && inPoint_Y >= 0 && inPoint_Y <= imageHeight)
-    {
+    //if(inPoint_X >= 0 && inPoint_X <= imageWidth && inPoint_Y >= 0 && inPoint_Y <= imageHeight)
+    //{
         piviotPoint_X = inPoint_X;
-        piviotPoint_Y = imageHeight - inPoint_Y;
-    }
+        //piviotPoint_Y = imageHeight - inPoint_Y;
+        piviotPoint_Y = inPoint_Y;
+    //}
 }
 
 void ImageAnalyzer::setAngleRange(const float inLowAngle, const float inHighAngle)
@@ -71,8 +74,8 @@ std::vector<unsigned int> ImageAnalyzer::getVector(const float inAngle)const
             SurroundingPoints[5] = floor(rotatedY);
             SurroundingPoints[6] = floor(rotatedX);
             SurroundingPoints[7] = floor(rotatedY);
-            float lowXValue = fabs(((float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]) - (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7]))) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]);
-            float highXValue = fabs(((float)getPixelValue((int)SurroundingPoints[2],(int)SurroundingPoints[3]) - (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1]))) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1]);
+            float lowXValue = ((float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]) - (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7])) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7]);
+            float highXValue = ((float)getPixelValue((int)SurroundingPoints[2],(int)SurroundingPoints[3]) - (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1])) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1]);
             float value = (highXValue - lowXValue) * (rotatedY - floor(rotatedY)) + lowXValue;
             returnVector.push_back(value);
         }
@@ -107,7 +110,10 @@ float ImageAnalyzer::getAngle()const
         DCTResults.clear();
         j += angleStep;
     }
+    cout << "goodAngle: " << 360 * 2 - goodLowAngle << endl;
+    correctAngle(360 * 2 - goodLowAngle);
     return goodLowAngle;
+    //return correctAngle(goodLowAngle);
 }
 
 unsigned char ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigned int inY)const
@@ -146,4 +152,49 @@ std::vector<float> ImageAnalyzer::DCT(std::vector<unsigned int>* inData)const
         returnData.push_back(value);
     }
     return returnData;
+}
+
+float ImageAnalyzer::correctAngle(float inAngle)const
+{
+    if(inAngle > 180)
+    {
+        inAngle -= 180;
+    }
+    float correctValue = -1;
+    bool negInAngle = false;
+    if(inAngle < 0)
+    {
+        negInAngle = true;
+        inAngle = fabs(inAngle);
+    }
+    if(inAngle !=0 && inAngle != 180)
+    {
+        float R = 0;
+        float decimalPoint = 1;
+        correctValue = 180 - inAngle;
+        float K = 9.5;
+        while(decimalPoint > .0001)
+        {
+            R = K * sin(correctValue * M_PI / 180) + K * cos(correctValue * M_PI / 180) * tan((180 - (correctValue + inAngle)) * M_PI / 180);
+            if(R > partDiameter)
+            {
+                correctValue += decimalPoint;
+                decimalPoint /= 10;
+            }
+            else
+            {
+                correctValue -= decimalPoint;
+            }
+        }
+        cout << 90 - (180 - (correctValue + inAngle)) << endl;
+    }
+    if(negInAngle)
+    {
+        correctValue = -(90 - (180 - (correctValue + inAngle)));
+    }
+    else
+    {
+        correctValue = (90 - (180 - (correctValue + inAngle)));
+    }
+    return correctValue;
 }
