@@ -10,6 +10,7 @@ END_EVENT_TABLE()
 
 BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
 {
+    this->SetMinSize(wxSize(640,480));
     myImageAnal = new ImageAnalyzer();
     myImageAnal->setAngleRange(360 , 360 * 2);
     //myImageAnal->setAngleRange(0, 360);
@@ -87,6 +88,12 @@ void BasicDrawPlane::render(wxDC& dc)
     drawArc(dc, 64, 40, cursorX, cursorY, radiusSize, wxColour(255, 255, 255, 64));
 
     drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize, wxColour(0, 0, 0, 255));
+    wxFont newFont;
+    newFont.SetPointSize(16);
+    dc.SetPen(currentPen);
+    dc.SetFont(newFont);
+    dc.SetTextForeground(wxColor(0, 0, 0));
+    dc.DrawText(wxString::FromDouble(360 * 2 - myImageAnal->getAngle(), 2), cursorX - 25, cursorY + 20);
 
 }
 void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor)

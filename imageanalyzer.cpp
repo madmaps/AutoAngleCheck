@@ -110,8 +110,8 @@ float ImageAnalyzer::getAngle()const
         DCTResults.clear();
         j += angleStep;
     }
-    cout << "goodAngle: " << 360 * 2 - goodLowAngle << endl;
-    correctAngle(360 * 2 - goodLowAngle);
+    //cout << "goodAngle: " << 360 * 2 - goodLowAngle << endl;
+    //correctAngle(360 * 2 - goodLowAngle);
     return goodLowAngle;
     //return correctAngle(goodLowAngle);
 }
@@ -186,7 +186,7 @@ float ImageAnalyzer::correctAngle(float inAngle)const
                 correctValue -= decimalPoint;
             }
         }
-        cout << 90 - (180 - (correctValue + inAngle)) << endl;
+        //cout << 90 - (180 - (correctValue + inAngle)) << endl;
     }
     if(negInAngle)
     {
