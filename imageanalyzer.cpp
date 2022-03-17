@@ -29,12 +29,8 @@ void ImageAnalyzer::setImageData(unsigned char* inNewImage,const unsigned int in
 
 void ImageAnalyzer::setPiviotPoint(const unsigned int inPoint_X, const unsigned int inPoint_Y)
 {
-    //if(inPoint_X >= 0 && inPoint_X <= imageWidth && inPoint_Y >= 0 && inPoint_Y <= imageHeight)
-    //{
         piviotPoint_X = inPoint_X;
-        //piviotPoint_Y = imageHeight - inPoint_Y;
         piviotPoint_Y = inPoint_Y;
-    //}
 }
 
 void ImageAnalyzer::setAngleRange(const float inLowAngle, const float inHighAngle)
@@ -110,10 +106,7 @@ float ImageAnalyzer::getAngle()const
         DCTResults.clear();
         j += angleStep;
     }
-    //cout << "goodAngle: " << 360 * 2 - goodLowAngle << endl;
-    //correctAngle(360 * 2 - goodLowAngle);
     return goodLowAngle;
-    //return correctAngle(goodLowAngle);
 }
 
 unsigned char ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigned int inY)const
@@ -175,7 +168,8 @@ float ImageAnalyzer::correctAngle(float inAngle)const
         float K = 9.5;
         while(decimalPoint > .0001)
         {
-            R = K * sin(correctValue * M_PI / 180) + K * cos(correctValue * M_PI / 180) * tan((180 - (correctValue + inAngle)) * M_PI / 180);
+            R = K * sin(correctValue * M_PI / 180) + K * cos(correctValue * M_PI / 180)
+                * tan((180 - (correctValue + inAngle)) * M_PI / 180);
             if(R > partDiameter)
             {
                 correctValue += decimalPoint;
@@ -186,7 +180,6 @@ float ImageAnalyzer::correctAngle(float inAngle)const
                 correctValue -= decimalPoint;
             }
         }
-        //cout << 90 - (180 - (correctValue + inAngle)) << endl;
     }
     if(negInAngle)
     {

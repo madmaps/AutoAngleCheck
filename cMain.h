@@ -5,6 +5,7 @@
 #include "imageanalyzer.h"
 #include "renderTimer.h"
 #include "basicDrawPlane.h"
+#include "angleChart.h"
 
 
 
@@ -20,6 +21,7 @@ public:
 private:
     RenderTimer* timer;
     BasicDrawPlane* drawPlane;
+    AngleChart* chart;
     DECLARE_EVENT_TABLE()
 };
 

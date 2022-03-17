@@ -13,6 +13,29 @@ END_EVENT_TABLE()
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
+    this->SetBackgroundColour(wxColour(200, 200, 200));
+    wxBoxSizer* leftTopSizer = new wxBoxSizer(wxHORIZONTAL);
+    drawPlane = new BasicDrawPlane(this);
+    leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
+    wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
+    leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
+
+
+    wxButton* captureButton = new wxButton(this, wxID_ANY, "CAPTURE");
+    captureButton->SetMaxSize(wxSize(120, 50));
+    captureButton->SetMinSize(wxSize(120, 50));
+    wxButton* submitButton = new wxButton(this, wxID_ANY, "SUBMIT");
+    submitButton->SetMaxSize(wxSize(120, 50));
+    submitButton->SetMinSize(wxSize(120, 50));
+    wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+    buttonSizer->Add(captureButton, 0, wxEXPAND | wxALL | wxCENTER, 10);
+    buttonSizer->Add(submitButton, 0, wxEXPAND | wxALL, 10);
+
+    wxBoxSizer* leftSizer = new wxBoxSizer(wxVERTICAL);
+    leftSizer->Add(leftTopSizer, 0, wxEXPAND | wxALL, 10);
+
+    //leftSizer->Add(buttonSizer, 0, wxEXPAND | wxALL, 10);
+
     wxStaticBoxSizer* fixtureSizer = new wxStaticBoxSizer(wxVERTICAL, this, wxString("Fixture"));
     wxBoxSizer* fixtureEditSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* fixtureStaticText = new wxStaticText(this, wxID_ANY, "Fixture #");
@@ -21,6 +44,13 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     fixtureEditSizer->Add(fixtureTextCtrl, 0, wxEXPAND | wxALL, 10);
 
     wxListBox* fixtureListBox = new wxListBox(this, wxID_ANY);
+    fixtureListBox->SetMaxSize(wxSize(999,100));
+    fixtureListBox->Insert(wxString("5142"), 0);
+    fixtureListBox->Insert(wxString("2141"), 0);
+    fixtureListBox->Insert(wxString("3169"), 0);
+    fixtureListBox->Insert(wxString("2219"), 0);
+    fixtureListBox->Insert(wxString("9814"), 0);
+
 
     fixtureSizer->Add(fixtureEditSizer, 0, wxEXPAND | wxALL, 10);
     fixtureSizer->Add(fixtureListBox, 0, wxEXPAND | wxALL, 10);
@@ -33,57 +63,65 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     partNumEditSizer->Add(partNumTextCtrl, 0, wxEXPAND | wxALL, 10);
 
     wxListBox* partNumListBox = new wxListBox(this, wxID_ANY);
+    partNumListBox->SetMaxSize(wxSize(999,100));
+    partNumListBox->Insert(wxString("50J196"), 0);
+    partNumListBox->Insert(wxString("53K425"), 0);
+    partNumListBox->Insert(wxString("53K426"), 0);
+    partNumListBox->Insert(wxString("53K427"), 0);
+    partNumListBox->Insert(wxString("53K428"), 0);
+    partNumListBox->Insert(wxString("4326050"), 0);
+    partNumListBox->Insert(wxString("4111614"), 0);
+
 
     partNumSizer->Add(partNumEditSizer, 0, wxEXPAND | wxALL, 10);
     partNumSizer->Add(partNumListBox, 0, wxEXPAND | wxALL, 10);
 
-    wxBoxSizer* topHorSizer = new wxBoxSizer(wxHORIZONTAL);
-    drawPlane = new BasicDrawPlane(this);
-    topHorSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
-    wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
-    topHorSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
-    topHorSizer->Add(partNumSizer, 0, wxEXPAND | wxALL, 10);
-    topHorSizer->Add(fixtureSizer, 0, wxEXPAND | wxALL, 10);
-
-
-    wxStaticText* serialNumStaticText = new wxStaticText(this, wxID_ANY, wxString("Serial#"));
+    wxStaticText* serialNumStaticText = new wxStaticText(this, wxID_ANY, wxString("Serial#      "));
     wxTextCtrl* serialNumTextCtrl = new wxTextCtrl(this, wxID_ANY);
+    serialNumTextCtrl->SetMinSize(wxSize(150,40));
     wxBoxSizer* serialNumSizer = new wxBoxSizer(wxHORIZONTAL);
     serialNumSizer->Add(serialNumStaticText, 0, wxEXPAND | wxALL, 10);
     serialNumSizer->Add(serialNumTextCtrl, 0, wxEXPAND | wxALL, 10);
 
+    wxBoxSizer* topRightSizer = new wxBoxSizer(wxHORIZONTAL);
+    topRightSizer->Add(partNumSizer, 0, wxEXPAND | wxALL, 10);
+    topRightSizer->Add(fixtureSizer, 0, wxEXPAND | wxALL, 10);
+
     wxStaticText* commentStaticText = new wxStaticText(this, wxID_ANY, wxString("Comment"));
     wxTextCtrl* commentTextCtrl = new wxTextCtrl(this, wxID_ANY);
+    commentTextCtrl->SetMinSize(wxSize(300, 40));
     wxBoxSizer* commentSizer = new wxBoxSizer(wxHORIZONTAL);
     commentSizer->Add(commentStaticText, 0, wxEXPAND | wxALL, 10);
     commentSizer->Add(commentTextCtrl, 0, wxEXPAND | wxALL, 10);
 
-    wxBoxSizer* serialCommentSizer = new wxBoxSizer(wxVERTICAL);
+
+
+    wxStaticBoxSizer* serialCommentSizer = new wxStaticBoxSizer(wxVERTICAL, this, "Information");
     serialCommentSizer->Add(serialNumSizer, 0, wxEXPAND | wxALL, 10);
     serialCommentSizer->Add(commentSizer, 0, wxEXPAND | wxALL, 10);
 
-    wxButton* captureButton = new wxButton(this, wxID_ANY, "CAPTURE");
-    wxButton* submitButton = new wxButton(this, wxID_ANY, "SUBMIT");
-    wxBoxSizer* buttonSizer = new wxBoxSizer(wxVERTICAL);
-    buttonSizer->Add(captureButton, 0, wxEXPAND | wxALL, 10);
-    buttonSizer->Add(submitButton, 0, wxEXPAND | wxALL, 10);
-
-    wxBoxSizer* middleHorSizer = new wxBoxSizer(wxHORIZONTAL);
-    middleHorSizer->Add(buttonSizer, 1, wxEXPAND | wxALL, 10);
-    middleHorSizer->Add(serialCommentSizer, 1, wxEXPAND | wxALL, 10);
+    wxBoxSizer* rightSizer = new wxBoxSizer(wxVERTICAL);
+    rightSizer->Add(topRightSizer, 0, wxEXPAND | wxALL, 10);
+    rightSizer->Add(serialCommentSizer, 0, wxEXPAND | wxALL, 10);
+    rightSizer->Add(buttonSizer, 0 , wxEXPAND | wxALL, 10);
 
 
-    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->Add(topHorSizer, 0, wxEXPAND | wxALL, 10);
-    sizer->Add(middleHorSizer, 0, wxEXPAND | wxALL, 10);
 
-    SetSizer(sizer);
+    wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(leftSizer, 0, wxEXPAND | wxALL, 10);
+    sizer->Add(rightSizer, 0, wxEXPAND | wxALL, 10);
+    wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
+    topSizer->Add(sizer, 0, wxEXPAND | wxALL, 10);
+    chart = new AngleChart(this);
+
+    topSizer->Add(chart, 0, wxEXPAND | wxALL, 10);
+
+
+    SetSizer(topSizer);
 
     timer = new RenderTimer(drawPlane);
     Show();
     timer->start();
-
-
 
 }
 
@@ -103,5 +141,4 @@ void cMain::onClose(wxCloseEvent& evt)
     timer->Stop();
     evt.Skip();
 }
-
 

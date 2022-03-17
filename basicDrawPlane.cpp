@@ -87,13 +87,14 @@ void BasicDrawPlane::render(wxDC& dc)
     drawArc(dc, 60, 64, cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
     drawArc(dc, 64, 40, cursorX, cursorY, radiusSize, wxColour(255, 255, 255, 64));
 
-    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize, wxColour(0, 0, 0, 255));
+    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize, wxColour(255, 100, 0, 255));
     wxFont newFont;
     newFont.SetPointSize(16);
     dc.SetPen(currentPen);
     dc.SetFont(newFont);
-    dc.SetTextForeground(wxColor(0, 0, 0));
-    dc.DrawText(wxString::FromDouble(360 * 2 - myImageAnal->getAngle(), 2), cursorX - 25, cursorY + 20);
+    dc.SetTextForeground(wxColor(255, 100, 0));
+    float goodAngle = 360 * 2 - myImageAnal->getAngle();
+    dc.DrawText(wxString::FromDouble(goodAngle, 2), cursorX - 25, cursorY + 20);
 
 }
 void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor)
@@ -114,6 +115,7 @@ void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY
 
     wxPen currentPen;
     currentPen.SetColour(inColor);
+    currentPen.SetWidth(2);
     inDC.SetPen(currentPen);
     inDC.DrawLine(xEnd, yEnd, xStart, yStart);
 }
