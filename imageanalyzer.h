@@ -35,6 +35,8 @@ private:
     unsigned char getPixelValue(const unsigned int inX, const unsigned int inY)const;
     float rotatePoint_X(const float inX, const float inY, const float inAngle)const;
     float rotatePoint_Y(const float inX, const float inY, const float inAngle)const;
+    float correctAngle(float inAngle)const;
+
 };
 
 #endif // IMAGEANALYZER_H
