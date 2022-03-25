@@ -6,8 +6,9 @@ using namespace std;
 
 
 BEGIN_EVENT_TABLE(cMain, wxFrame)
-EVT_CLOSE(cMain::onClose)
-EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
+    EVT_CLOSE(cMain::onClose)
+    EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
+    EVT_BUTTON(100023, cMain::capture)
 END_EVENT_TABLE()
 
 
@@ -18,14 +19,17 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     drawPlane = new BasicDrawPlane(this);
     drawPlane->setPartAngles(10, 15, 25, 30);
     drawPlane->setRadialSeal(true);
-    drawPlane->setRadialSealProperties(7, 1.5);
+    drawPlane->setRadialSealProperties(4, 1.5);
     drawPlane->setCameraPhysicalDimensions(1, 0.5);
+    drawPlane->setStartCapturePoint(100, 240);
+    drawPlane->setEndCapturePoint(540, 240);
+    drawPlane->setCaptureStep(10);
     leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
     wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
     leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
 
 
-    wxButton* captureButton = new wxButton(this, wxID_ANY, "CAPTURE");
+    wxButton* captureButton = new wxButton(this, 100023, "CAPTURE");
     captureButton->SetMaxSize(wxSize(120, 50));
     captureButton->SetMinSize(wxSize(120, 50));
     wxButton* submitButton = new wxButton(this, wxID_ANY, "SUBMIT");
@@ -129,6 +133,10 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
 
 }
 
+void cMain::capture(wxCommandEvent& evt)
+{
+    drawPlane->startCapture();
+}
 cMain::~cMain()
 {
     delete timer;

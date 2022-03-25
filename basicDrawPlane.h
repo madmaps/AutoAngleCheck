@@ -16,6 +16,7 @@ public:
     void setStartCapturePoint(const unsigned int inCaptureStartX, const unsigned int inCaptureStartY);
     void setEndCapturePoint(const unsigned int inCaptureEndX, const unsigned int inCaptureEndY);
     void setCaptureStep(const unsigned int inCaptureStep);
+    void startCapture();
     void paintEvent(wxPaintEvent& evt);
     void paintNow();
     void render(wxDC& dc);
@@ -48,6 +49,8 @@ private:
     unsigned int captureEndX;
     unsigned int captureEndY;
     unsigned int captureStep;
+    float currentStep;
+    std::vector<float> capturedAngles;
 
     void drawArc(wxDC& inDC, float startAngle, float endAngle,int inLocX, int inLocY, int inRad, wxColour inColor);
     void drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor);

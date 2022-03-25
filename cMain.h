@@ -17,6 +17,7 @@ public:
     ~cMain();
     void onClose(wxCloseEvent& evt);
     void sizeEvent(wxScrollEvent& evt);
+    void capture(wxCommandEvent& evt);
 
 private:
     RenderTimer* timer;

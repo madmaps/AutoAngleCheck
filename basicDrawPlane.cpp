@@ -34,6 +34,13 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     }
 }
 
+void BasicDrawPlane::startCapture()
+{
+    captureMode = true;
+    currentStep = 0;
+    capturedAngles.clear();
+}
+
 void BasicDrawPlane::setRadialSeal(const bool inIsRadial)
 {
     isRadialSeal = inIsRadial;
@@ -118,6 +125,45 @@ void BasicDrawPlane::render(wxDC& dc)
     myImageAnal->setPiviotPoint(cursorX, cursorY);
     wxImage test(frame.cols, frame.rows, frame.data, true);
     dc.DrawBitmap(wxBitmap(test, 24), 0, 0);
+    if(captureMode)
+    {
+        float length = vectorLength((int)captureEndX - (int)captureStartX, (int)captureEndY - (int)captureStartY);
+        float percentDone = currentStep / length;
+        float currentX = (int)captureStartX + ((int)captureEndX - (int)captureStartX) * percentDone;
+        float currentY = (int)captureStartY + ((int)captureEndY - (int)captureStartY) * percentDone;
+        myImageAnal->setAnalyzLength(16);
+        radiusSize = 16;
+        myImageAnal->setPiviotPoint(currentX, currentY);
+        float goodAngle = 360 * 2 - myImageAnal->getAngle();
+        if(isRadialSeal)
+        {
+            float offset = partMylarRadius  - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(partMylarRadius - toPhysicalY(imageHeight - cursorY), 2));
+            float cursorAngle = findDotProdAngle(0, partMylarRadius, 0 - toPhysicalX(cursorX), partMylarRadius - toPhysicalY(imageHeight - cursorY));
+            if(cursorX < 320)
+            {
+                cursorAngle = -cursorAngle;
+            }
+            goodAngle = toMylarAngle((goodAngle) + cursorAngle, partMylarRadius, offset);
+        }
+        if(goodAngle > -90 && goodAngle < 90)
+        {
+            capturedAngles.push_back(goodAngle);
+        }
+
+        cursorX = currentX;
+        cursorY = currentY;
+        currentStep += captureStep;
+        if(percentDone > 1)
+        {
+            captureMode = false;
+            float total = 0;
+            for(float angle : capturedAngles)
+            {
+                total += angle;
+            }
+            cout << total / capturedAngles.size() << endl;
+        }
+    }
     wxPen currentPen;
     currentPen.SetWidth(1);
     currentPen.SetColour(wxColour(0, 0 , 0));
