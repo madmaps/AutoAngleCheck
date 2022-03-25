@@ -15,8 +15,6 @@ ImageAnalyzer::ImageAnalyzer()
     lowAngle = 0;
     highAngle = 360;
     angleStep = 1;
-    partDiameter = 10;
-    partYOffset = 3;
 }
 
 void ImageAnalyzer::setImageData(unsigned char* inNewImage,const unsigned int inWidth, const unsigned int inHeight,const unsigned int inBitDepth)
@@ -43,6 +41,9 @@ void ImageAnalyzer::setAnalyzLength(const unsigned int inLength)
 {
         analyzLength = inLength;
 }
+
+
+
 
 std::vector<unsigned int> ImageAnalyzer::getVector(const float inAngle)const
 {
@@ -147,47 +148,57 @@ std::vector<float> ImageAnalyzer::DCT(std::vector<unsigned int>* inData)const
     return returnData;
 }
 
-float ImageAnalyzer::correctAngle(float inAngle)const
+/*float ImageAnalyzer::getAngle(float mylarRadius, float yOffset, float physicalWidth, float physicalHeight)const
 {
-    if(inAngle > 180)
-    {
-        inAngle -= 180;
-    }
-    float correctValue = -1;
-    bool negInAngle = false;
-    if(inAngle < 0)
-    {
-        negInAngle = true;
-        inAngle = fabs(inAngle);
-    }
-    if(inAngle !=0 && inAngle != 180)
-    {
-        float R = 0;
-        float decimalPoint = 1;
-        correctValue = 180 - inAngle;
-        float K = 9.5;
-        while(decimalPoint > .0001)
-        {
-            R = K * sin(correctValue * M_PI / 180) + K * cos(correctValue * M_PI / 180)
-                * tan((180 - (correctValue + inAngle)) * M_PI / 180);
-            if(R > partDiameter)
-            {
-                correctValue += decimalPoint;
-                decimalPoint /= 10;
-            }
-            else
-            {
-                correctValue -= decimalPoint;
-            }
-        }
-    }
-    if(negInAngle)
-    {
-        correctValue = -(90 - (180 - (correctValue + inAngle)));
-    }
-    else
-    {
-        correctValue = (90 - (180 - (correctValue + inAngle)));
-    }
-    return correctValue;
-}
+    return toMylarAngle(getAngle(), mylarRadius, yOffset);
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
