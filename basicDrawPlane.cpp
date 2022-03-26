@@ -27,6 +27,7 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     cursorY = 480 / 2;
     captureMode = false;
     captureStep = 1;
+    captureRadius = 64;
 
     if(!camera.isOpened())
     {
@@ -36,6 +37,9 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
 
 void BasicDrawPlane::startCapture()
 {
+    savedCursorX = cursorX;
+    savedCursorY = cursorY;
+    savedRadius = radiusSize;
     captureMode = true;
     currentStep = 0;
     capturedAngles.clear();
@@ -77,6 +81,12 @@ void BasicDrawPlane::setEndCapturePoint(const unsigned int inCaptureEndX, const 
     captureEndX = inCaptureEndX;
     captureEndY = inCaptureEndY;
 }
+
+void BasicDrawPlane::setCaptureRadius(const unsigned int inCaptureRadius)
+{
+    captureRadius = inCaptureRadius;
+}
+
 
 void BasicDrawPlane::setCaptureStep(const unsigned int inCaptureStep)
 {
@@ -120,19 +130,25 @@ void BasicDrawPlane::render(wxDC& dc)
     dc.SetBackground(*wxWHITE_BRUSH);
     dc.Clear();
     camera >> frame;
-
+    wxPen currentPen;
+    wxBrush currentBrush;
     myImageAnal->setImageData(frame.data,frame.cols,frame.rows);
     myImageAnal->setPiviotPoint(cursorX, cursorY);
-    wxImage test(frame.cols, frame.rows, frame.data, true);
-    dc.DrawBitmap(wxBitmap(test, 24), 0, 0);
+    wxImage bitMap(frame.cols, frame.rows, frame.data, true);
+    dc.DrawBitmap(wxBitmap(bitMap, 24), 0, 0);
     if(captureMode)
     {
+        currentPen.SetWidth(25);
+        currentPen.SetColour(wxColour(255, 255 , 255, 100));
+        dc.SetPen(currentPen);
+        dc.DrawLine(captureStartX, captureStartY, captureEndX, captureEndY);
+
         float length = vectorLength((int)captureEndX - (int)captureStartX, (int)captureEndY - (int)captureStartY);
         float percentDone = currentStep / length;
         float currentX = (int)captureStartX + ((int)captureEndX - (int)captureStartX) * percentDone;
         float currentY = (int)captureStartY + ((int)captureEndY - (int)captureStartY) * percentDone;
-        myImageAnal->setAnalyzLength(16);
-        radiusSize = 16;
+        myImageAnal->setAnalyzLength(captureRadius);
+        radiusSize = captureRadius;
         myImageAnal->setPiviotPoint(currentX, currentY);
         float goodAngle = 360 * 2 - myImageAnal->getAngle();
         if(isRadialSeal)
@@ -143,7 +159,7 @@ void BasicDrawPlane::render(wxDC& dc)
             {
                 cursorAngle = -cursorAngle;
             }
-            goodAngle = toMylarAngle((goodAngle) + cursorAngle, partMylarRadius, offset);
+            goodAngle = toMylarAngle((goodAngle) - cursorAngle, partMylarRadius, offset);
         }
         if(goodAngle > -90 && goodAngle < 90)
         {
@@ -155,6 +171,10 @@ void BasicDrawPlane::render(wxDC& dc)
         currentStep += captureStep;
         if(percentDone > 1)
         {
+            cursorX = savedCursorX;
+            cursorY = savedCursorY;
+            radiusSize = savedRadius;
+            myImageAnal->setAnalyzLength(radiusSize);
             captureMode = false;
             float total = 0;
             for(float angle : capturedAngles)
@@ -164,10 +184,8 @@ void BasicDrawPlane::render(wxDC& dc)
             cout << total / capturedAngles.size() << endl;
         }
     }
-    wxPen currentPen;
     currentPen.SetWidth(1);
     currentPen.SetColour(wxColour(0, 0 , 0));
-    wxBrush currentBrush;
     currentBrush.SetColour(wxColour(0, 255, 0, 64));
     currentBrush.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
     dc.SetPen(currentPen);
@@ -242,7 +260,7 @@ void BasicDrawPlane::drawAngleRanges(wxDC& inDC)
         drawArc(inDC, greenLow + (180 * i), greenHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(0, 255, 0, 64));
         drawArc(inDC, yellowLow + (180 * i), greenLow + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
         drawArc(inDC, greenHigh + (180 * i), yellowHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
-        drawArc(inDC, yellowHigh + (180 * i), yellowLow + (180 * (i + 1)), cursorX, cursorY, radiusSize, wxColour(255, 0, 0, 15));
+        drawArc(inDC, yellowHigh + (180 * i), yellowLow + (180 * (i + 1)), cursorX, cursorY, radiusSize, wxColour(255, 0, 0, 64));
     }
 
 }
@@ -272,7 +290,10 @@ void BasicDrawPlane::drawArc(wxDC& inDC, float startAngle, float endAngle,int in
     currentBrush.SetColour(inColor);
     inDC.SetBrush(currentBrush);
     inDC.SetPen(currentPen);
-    inDC.DrawArc(xEnd, yEnd, xStart, yStart, inLocX, inLocY);
+    if(!((unsigned int)xStart == (unsigned int)yStart && (unsigned int)xEnd == (unsigned int)yEnd))
+    {
+        inDC.DrawArc(xEnd, yEnd, xStart, yStart, inLocX, inLocY);
+    }
 
 }
 

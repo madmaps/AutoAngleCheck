@@ -17,13 +17,14 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     this->SetBackgroundColour(wxColour(200, 200, 200));
     wxBoxSizer* leftTopSizer = new wxBoxSizer(wxHORIZONTAL);
     drawPlane = new BasicDrawPlane(this);
-    drawPlane->setPartAngles(10, 15, 25, 30);
+    drawPlane->setPartAngles(43, 44, 50, 51);
     drawPlane->setRadialSeal(true);
-    drawPlane->setRadialSealProperties(4, 1.5);
+    drawPlane->setRadialSealProperties(10, 0.5);
     drawPlane->setCameraPhysicalDimensions(1, 0.5);
     drawPlane->setStartCapturePoint(100, 240);
     drawPlane->setEndCapturePoint(540, 240);
     drawPlane->setCaptureStep(10);
+    drawPlane->setCaptureRadius(64);
     leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
     wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
     leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);

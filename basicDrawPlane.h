@@ -16,6 +16,7 @@ public:
     void setStartCapturePoint(const unsigned int inCaptureStartX, const unsigned int inCaptureStartY);
     void setEndCapturePoint(const unsigned int inCaptureEndX, const unsigned int inCaptureEndY);
     void setCaptureStep(const unsigned int inCaptureStep);
+    void setCaptureRadius(const unsigned int inCaptureRadius);
     void startCapture();
     void paintEvent(wxPaintEvent& evt);
     void paintNow();
@@ -44,12 +45,16 @@ private:
     float partMylarRadius;
     float partYOffset;
     bool captureMode;
+    unsigned int savedCursorX;
+    unsigned int savedCursorY;
+    unsigned int savedRadius;
     unsigned int captureStartX;
     unsigned int captureStartY;
     unsigned int captureEndX;
     unsigned int captureEndY;
     unsigned int captureStep;
     float currentStep;
+    unsigned int captureRadius;
     std::vector<float> capturedAngles;
 
     void drawArc(wxDC& inDC, float startAngle, float endAngle,int inLocX, int inLocY, int inRad, wxColour inColor);
