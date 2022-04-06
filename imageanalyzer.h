@@ -20,6 +20,8 @@ public:
     bool getIsRadialSeal()const;
     float getPartMylarRadius()const;
     float getPartYOffset()const;
+    float getStartAngle()const;
+    float getEndAngle()const;
     float getAngle()const;
 
 private:

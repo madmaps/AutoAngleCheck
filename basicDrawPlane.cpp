@@ -14,17 +14,17 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
 {
     imageWidth = 640;
     imageHeight = 480;
-    this->SetMinSize(wxSize(640,480));
+    this->SetMinSize(wxSize(imageWidth,imageHeight));
     myImageAnal = new ImageAnalyzer();
     myImageAnal->setAngleRange(360 , 360 * 2);
     goodCamera = true;
     camera.open(0);
-    camera.set(cv::CAP_PROP_FRAME_WIDTH , 640);
-    camera.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    camera.set(cv::CAP_PROP_FRAME_WIDTH , imageWidth);
+    camera.set(cv::CAP_PROP_FRAME_HEIGHT, imageHeight);
     radiusSize = 128;
     analyzeSize = 64;
-    cursorX = 640 / 2;
-    cursorY = 480 / 2;
+    cursorX = imageWidth / 2;
+    cursorY = imageHeight / 2;
     captureMode = false;
     if(!camera.isOpened())
     {
@@ -38,6 +38,8 @@ void BasicDrawPlane::startCapture()
     savedCursorY = cursorY;
     savedRadius = analyzeSize;
     savedAngleStep = myImageAnal->getAngleStep();
+    savedStartAngle = myImageAnal->getStartAngle();
+    savedEndAngle = myImageAnal->getEndAngle();
     captureMode = true;
     currentStep = 0;
 }
@@ -125,6 +127,7 @@ void BasicDrawPlane::render(wxDC& dc)
         float currentY = (int)myPart->getStartCaptureY() + ((int)myPart->getEndCaptureY() - (int)myPart->getStartCaptureY()) * percentDone;
         myImageAnal->setAnalyzLength(myPart->getCaptureRadius());
         myImageAnal->setAngleStep(myPart->getCaptureAngleStep());
+        myImageAnal->setAngleRange(myPart->getCaptureStartAngle(), myPart->getCaptureEndAngle());
         analyzeSize = myPart->getCaptureRadius();
         myImageAnal->setPiviotPoint(currentX, currentY);
         float goodAngle = 360 * 2 - myImageAnal->getAngle();
@@ -154,6 +157,7 @@ void BasicDrawPlane::render(wxDC& dc)
             analyzeSize = savedRadius;
             myImageAnal->setAnalyzLength(savedRadius);
             myImageAnal->setAngleStep(savedAngleStep);
+            myImageAnal->setAngleRange(savedStartAngle, savedEndAngle);
             captureMode = false;
             float total = 0;
             for(float angle : capturedAngles)

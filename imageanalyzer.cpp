@@ -34,6 +34,16 @@ void ImageAnalyzer::setPiviotPoint(const unsigned int inPoint_X, const unsigned 
         piviotPoint_Y = inPoint_Y;
 }
 
+float ImageAnalyzer::getStartAngle() const
+{
+    return lowAngle;
+}
+
+float ImageAnalyzer::getEndAngle() const
+{
+    return highAngle;
+}
+
 void ImageAnalyzer::setAngleRange(const float inLowAngle, const float inHighAngle)
 {
     lowAngle = inLowAngle;

@@ -41,6 +41,8 @@ private:
     unsigned int savedCursorY;
     unsigned int savedRadius;
     unsigned int savedAngleStep;
+    float savedStartAngle;
+    float savedEndAngle;
     float currentStep;
     std::vector<float> capturedAngles;
     wxTextCtrl* angleAverage;
