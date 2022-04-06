@@ -23,6 +23,7 @@ public:
          const float inCaptureAngleStep,
          const float inCaptureAngleStart,
          const float inCaptureAngleEnd);
+    bool operator<(const Part& RHS);
 
     std::string getPartName()const;
     float getLowYellowAngle()const;

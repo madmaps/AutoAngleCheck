@@ -8,18 +8,40 @@ using namespace std;
 BEGIN_EVENT_TABLE(cMain, wxFrame)
     EVT_CLOSE(cMain::onClose)
     EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
+    EVT_TEXT(100054, cMain::partTextChange)
     EVT_BUTTON(100023, cMain::capture)
     EVT_BUTTON(100017, cMain::clear)
+    EVT_LISTBOX(100082, cMain::changePartCmd)
 END_EVENT_TABLE()
 
+bool cmpTwoParts(Part* partOne, Part* partTwo)
+{
+    return (*partOne < *partTwo);
+}
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
+    Part* newPart = new Part("42J2235", 40, 44, 54, 60, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, TRUE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    listOfParts.push_back(newPart);
+    listOfParts.push_back(newPart1);
+    listOfParts.push_back(newPart2);
+    listOfParts.push_back(newPart3);
+    listOfParts.push_back(newPart4);
+    listOfParts.push_back(newPart5);
+    sort(listOfParts.begin(),listOfParts.end(),cmpTwoParts);
+
+
+
+
     this->SetBackgroundColour(wxColour(200, 200, 200));
     wxBoxSizer* leftTopSizer = new wxBoxSizer(wxHORIZONTAL);
     drawPlane = new BasicDrawPlane(this);
-    Part* newPart = new Part("42J2235", 40, 44, 54, 60, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    drawPlane->addPart(newPart);
+    drawPlane->addPart(listOfParts.at(0));
     leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
     wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
     leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
@@ -85,19 +107,25 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxStaticBoxSizer* partNumSizer = new wxStaticBoxSizer(wxVERTICAL, this, wxString("Part"));
     wxBoxSizer* partNumEditSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* partNumStaticText = new wxStaticText(this, wxID_ANY, "Part #");
-    wxTextCtrl* partNumTextCtrl = new wxTextCtrl(this, wxID_ANY);
+    partNumTextCtrl = new wxTextCtrl(this, 100054);
     partNumEditSizer->Add(partNumStaticText, 0, wxEXPAND | wxALL, 10);
     partNumEditSizer->Add(partNumTextCtrl, 0, wxEXPAND | wxALL, 10);
 
-    wxListBox* partNumListBox = new wxListBox(this, wxID_ANY);
+    partNumListBox = new wxListBox(this, 100082);
     partNumListBox->SetMaxSize(wxSize(999,100));
-    partNumListBox->Insert(wxString("50J196"), 0);
+    unsigned int count = 0;
+    for(Part* currentPart : listOfParts)
+    {
+        partNumListBox->Insert(currentPart->getPartName(), count);
+        count++;
+    }
+    /*partNumListBox->Insert(wxString("50J196"), 0);
     partNumListBox->Insert(wxString("53K425"), 0);
     partNumListBox->Insert(wxString("53K426"), 0);
     partNumListBox->Insert(wxString("53K427"), 0);
     partNumListBox->Insert(wxString("53K428"), 0);
     partNumListBox->Insert(wxString("4326050"), 0);
-    partNumListBox->Insert(wxString("4111614"), 0);
+    partNumListBox->Insert(wxString("4111614"), 0);*/
 
 
     partNumSizer->Add(partNumEditSizer, 0, wxEXPAND | wxALL, 10);
@@ -152,6 +180,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
 
 }
 
+
 void cMain::capture(wxCommandEvent& evt)
 {
     drawPlane->startCapture();
@@ -167,6 +196,23 @@ cMain::~cMain()
     delete timer;
 }
 
+void cMain::partTextChange(wxCommandEvent& evt)
+{
+    int index = 0;
+    unsigned int counter = 1;
+    for(Part* searchPart : listOfParts)
+    {
+        if(searchPart->getPartName().compare(partNumTextCtrl->GetLineText(0).c_str()) < 0)
+        {
+            index = counter;
+        }
+        counter++;
+    }
+    partNumListBox->SetSelection(index);
+    changePart();
+}
+
+
 void cMain::sizeEvent(wxScrollEvent &evt)
 {
     int newPosition = evt.GetPosition();
@@ -177,5 +223,16 @@ void cMain::onClose(wxCloseEvent& evt)
 {
     timer->Stop();
     evt.Skip();
+}
+
+void cMain::changePartCmd(wxCommandEvent& evt)
+{
+    changePart();
+}
+
+void cMain::changePart()
+{
+    Part* newPart = listOfParts.at(partNumListBox->GetSelection());
+    drawPlane->addPart(newPart);
 }
 

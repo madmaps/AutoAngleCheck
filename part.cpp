@@ -39,6 +39,11 @@ Part::Part(const std::string inPartName,
 
 }
 
+bool Part::operator<(const Part& RHS)
+{
+    return (partName.compare(RHS.partName) < 0);
+}
+
 
 std::string Part::getPartName()const
 {
