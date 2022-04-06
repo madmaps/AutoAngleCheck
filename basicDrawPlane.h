@@ -3,20 +3,14 @@
 #include <wx/wx.h>
 #include <opencv2/opencv.hpp>
 #include "imageanalyzer.h"
+#include "part.h"
 
 class BasicDrawPlane : public wxPanel
 {
 public:
     BasicDrawPlane(wxFrame* parent);
-    void setPartAngles(const float inLowYellowAngle, const float inLowGreenAngle, const float inHighGreenAngle, const float inHighYellowAngle);
+    void addPart(Part* inPart);
     void setCameraPhysicalDimensions(const float inPhysicalWidth, const float inPhysicalHeight);
-    void setRadialSeal(const bool inIsRadial);
-    void setRadialSealProperties(const float inPartMylarRadius, const float inPartYOffset);
-    void setStartCapturePoint(const unsigned int inCaptureStartX, const unsigned int inCaptureStartY);
-    void setEndCapturePoint(const unsigned int inCaptureEndX, const unsigned int inCaptureEndY);
-    void setCaptureStep(const unsigned int inCaptureStep);
-    void setCaptureAngleStep(const float inCaptureAngleStep);
-    void setCaptureRadius(const unsigned int inCaptureRadius);
     void startCapture();
     void clear();
     void paintEvent(wxPaintEvent& evt);
@@ -33,34 +27,21 @@ private:
     cv::VideoCapture camera;
     bool goodCamera;
     ImageAnalyzer* myImageAnal;
+    Part* myPart;
     unsigned int radiusSize;
     unsigned int analyzeSize;
     unsigned int cursorX;
     unsigned int cursorY;
-    float lowYellowAngle;
-    float lowGreenAngle;
-    float highGreenAngle;
-    float highYellowAngle;
     float imageWidth;
     float imageHeight;
     float physicalWidth;
     float physicalHeight;
-    bool isRadialSeal;
-    float partMylarRadius;
-    float partYOffset;
     bool captureMode;
     unsigned int savedCursorX;
     unsigned int savedCursorY;
     unsigned int savedRadius;
     unsigned int savedAngleStep;
-    unsigned int captureStartX;
-    unsigned int captureStartY;
-    unsigned int captureEndX;
-    unsigned int captureEndY;
-    unsigned int captureStep;
-    float captureAngleStep;
     float currentStep;
-    unsigned int captureRadius;
     std::vector<float> capturedAngles;
     wxTextCtrl* angleAverage;
     wxTextCtrl* sampleSize;
