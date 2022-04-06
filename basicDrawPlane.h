@@ -4,7 +4,6 @@
 #include <opencv2/opencv.hpp>
 #include "imageanalyzer.h"
 
-
 class BasicDrawPlane : public wxPanel
 {
 public:
@@ -16,13 +15,17 @@ public:
     void setStartCapturePoint(const unsigned int inCaptureStartX, const unsigned int inCaptureStartY);
     void setEndCapturePoint(const unsigned int inCaptureEndX, const unsigned int inCaptureEndY);
     void setCaptureStep(const unsigned int inCaptureStep);
+    void setCaptureAngleStep(const float inCaptureAngleStep);
     void setCaptureRadius(const unsigned int inCaptureRadius);
     void startCapture();
+    void clear();
     void paintEvent(wxPaintEvent& evt);
     void paintNow();
     void render(wxDC& dc);
     void updateSize(int inSize);
     void moveCursor(wxMouseEvent& evt);
+    void setAngleAverage(wxTextCtrl* inAngleAverage);
+    void setSampleSize(wxTextCtrl* inSampleSize);
 
 
 private:
@@ -31,6 +34,7 @@ private:
     bool goodCamera;
     ImageAnalyzer* myImageAnal;
     unsigned int radiusSize;
+    unsigned int analyzeSize;
     unsigned int cursorX;
     unsigned int cursorY;
     float lowYellowAngle;
@@ -48,14 +52,18 @@ private:
     unsigned int savedCursorX;
     unsigned int savedCursorY;
     unsigned int savedRadius;
+    unsigned int savedAngleStep;
     unsigned int captureStartX;
     unsigned int captureStartY;
     unsigned int captureEndX;
     unsigned int captureEndY;
     unsigned int captureStep;
+    float captureAngleStep;
     float currentStep;
     unsigned int captureRadius;
     std::vector<float> capturedAngles;
+    wxTextCtrl* angleAverage;
+    wxTextCtrl* sampleSize;
 
     void drawArc(wxDC& inDC, float startAngle, float endAngle,int inLocX, int inLocY, int inRad, wxColour inColor);
     void drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor);

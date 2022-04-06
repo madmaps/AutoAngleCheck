@@ -17,7 +17,10 @@ ImageAnalyzer::ImageAnalyzer()
     angleStep = 1;
 }
 
-void ImageAnalyzer::setImageData(unsigned char* inNewImage,const unsigned int inWidth, const unsigned int inHeight,const unsigned int inBitDepth)
+void ImageAnalyzer::setImageData(unsigned char* inNewImage,
+                                 const unsigned int inWidth,
+                                 const unsigned int inHeight,
+                                 const unsigned int inBitDepth)
 {
     currentImage = inNewImage;
     imageWidth = inWidth;
@@ -42,6 +45,15 @@ void ImageAnalyzer::setAnalyzLength(const unsigned int inLength)
         analyzLength = inLength;
 }
 
+void ImageAnalyzer::setAngleStep(const float inAngleStep)
+{
+    angleStep = inAngleStep;
+}
+
+float ImageAnalyzer::getAngleStep() const
+{
+    return angleStep;
+}
 
 
 
@@ -71,8 +83,14 @@ std::vector<unsigned int> ImageAnalyzer::getVector(const float inAngle)const
             SurroundingPoints[5] = floor(rotatedY);
             SurroundingPoints[6] = floor(rotatedX);
             SurroundingPoints[7] = floor(rotatedY);
-            float lowXValue = ((float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]) - (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7])) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7]);
-            float highXValue = ((float)getPixelValue((int)SurroundingPoints[2],(int)SurroundingPoints[3]) - (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1])) * (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1]);
+            float lowXValue = ((float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]) -
+                              (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7])) *
+                              (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[6],
+                              (int)SurroundingPoints[7]);
+            float highXValue = ((float)getPixelValue((int)SurroundingPoints[2],(int)SurroundingPoints[3]) -
+                              (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1])) *
+                              (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[0],
+                              (int)SurroundingPoints[1]);
             float value = (highXValue - lowXValue) * (rotatedY - floor(rotatedY)) + lowXValue;
             returnVector.push_back(value);
         }
@@ -147,58 +165,3 @@ std::vector<float> ImageAnalyzer::DCT(std::vector<unsigned int>* inData)const
     }
     return returnData;
 }
-
-/*float ImageAnalyzer::getAngle(float mylarRadius, float yOffset, float physicalWidth, float physicalHeight)const
-{
-    return toMylarAngle(getAngle(), mylarRadius, yOffset);
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

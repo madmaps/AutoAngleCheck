@@ -24,6 +24,8 @@ add_executable(AngleCheckGUI
                renderTimer.h
                renderTimer.cpp
                angleChart.h
-               angleChart.cpp)
+               angleChart.cpp
+               part.h
+               part.cpp)
 target_link_libraries(AngleCheckGUI ${wxWidgets_LIBRARIES} ${OpenCV_LIBS})
 

@@ -9,6 +9,7 @@ BEGIN_EVENT_TABLE(cMain, wxFrame)
     EVT_CLOSE(cMain::onClose)
     EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
     EVT_BUTTON(100023, cMain::capture)
+    EVT_BUTTON(100017, cMain::clear)
 END_EVENT_TABLE()
 
 
@@ -18,13 +19,14 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxBoxSizer* leftTopSizer = new wxBoxSizer(wxHORIZONTAL);
     drawPlane = new BasicDrawPlane(this);
     drawPlane->setPartAngles(43, 44, 50, 51);
-    drawPlane->setRadialSeal(true);
+    drawPlane->setRadialSeal(false);
     drawPlane->setRadialSealProperties(10, 0.5);
     drawPlane->setCameraPhysicalDimensions(1, 0.5);
-    drawPlane->setStartCapturePoint(100, 240);
-    drawPlane->setEndCapturePoint(540, 240);
+    drawPlane->setStartCapturePoint(150, 240);
+    drawPlane->setEndCapturePoint(500, 240);
     drawPlane->setCaptureStep(10);
     drawPlane->setCaptureRadius(64);
+    drawPlane->setCaptureAngleStep(1);
     leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
     wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
     leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
@@ -37,11 +39,34 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     submitButton->SetMaxSize(wxSize(120, 50));
     submitButton->SetMinSize(wxSize(120, 50));
     wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxButton* clearButton = new wxButton(this, 100017, "CLEAR");
+    clearButton->SetMaxSize(wxSize(120, 50));
+    clearButton->SetMinSize(wxSize(120, 50));
     buttonSizer->Add(captureButton, 0, wxEXPAND | wxALL | wxCENTER, 10);
+    buttonSizer->Add(clearButton, 0, wxEXPAND | wxALL, 10);
     buttonSizer->Add(submitButton, 0, wxEXPAND | wxALL, 10);
+
+
+
+    wxStaticText* angleAverageText = new wxStaticText(this, wxID_ANY, "Average Angle:");
+    angleAverage = new wxTextCtrl(this, 100045);
+    angleAverage->Enable(false);
+    drawPlane->setAngleAverage(angleAverage);
+    wxStaticText* sampleSizeText = new wxStaticText(this, wxID_ANY, "Samples:");
+    wxTextCtrl* sampleSize = new wxTextCtrl(this, 100044);
+    sampleSize->Enable(false);
+    drawPlane->setSampleSize(sampleSize);
+    wxBoxSizer* angleInfo = new wxBoxSizer(wxHORIZONTAL);
+    angleInfo->Add(angleAverageText, 0, wxEXPAND | wxALL, 10);
+    angleInfo->Add(angleAverage, 0, wxEXPAND | wxALL, 10);
+    angleInfo->Add(sampleSizeText, 0, wxEXPAND | wxALL, 10);
+    angleInfo->Add(sampleSize, 0, wxEXPAND | wxALL, 10);
+
+
 
     wxBoxSizer* leftSizer = new wxBoxSizer(wxVERTICAL);
     leftSizer->Add(leftTopSizer, 0, wxEXPAND | wxALL, 10);
+    leftSizer->Add(angleInfo, 0, wxEXPAND | wxALL, 10);
 
     //leftSizer->Add(buttonSizer, 0, wxEXPAND | wxALL, 10);
 
@@ -138,6 +163,12 @@ void cMain::capture(wxCommandEvent& evt)
 {
     drawPlane->startCapture();
 }
+
+void cMain::clear(wxCommandEvent& evt)
+{
+    drawPlane->clear();
+}
+
 cMain::~cMain()
 {
     delete timer;

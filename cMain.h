@@ -18,11 +18,15 @@ public:
     void onClose(wxCloseEvent& evt);
     void sizeEvent(wxScrollEvent& evt);
     void capture(wxCommandEvent& evt);
+    void clear(wxCommandEvent& evt);
+    wxTextCtrl* angleAverage;
+
 
 private:
     RenderTimer* timer;
     BasicDrawPlane* drawPlane;
     AngleChart* chart;
+
     DECLARE_EVENT_TABLE()
 };
 

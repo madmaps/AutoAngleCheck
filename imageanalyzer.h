@@ -7,11 +7,15 @@ class ImageAnalyzer
 {
 public:
     ImageAnalyzer();
-    void setImageData(unsigned char* inNewImage,const unsigned int inWidth, const unsigned int inHeight,const unsigned int inBitDepth = 3);
+    void setImageData(unsigned char* inNewImage,
+                      const unsigned int inWidth,
+                      const unsigned int inHeight,
+                      const unsigned int inBitDepth = 3);
     void setPiviotPoint(const unsigned int inPoint_X, const unsigned int inPoint_Y);
     void setAnalyzLength(const unsigned int inLength);
     void setAngleRange(const float inLowAngle, const float inHighAngle);
     void setAngleStep(const float inAngleStep);
+    float getAngleStep()const;
 
     bool getIsRadialSeal()const;
     float getPartMylarRadius()const;
