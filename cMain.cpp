@@ -22,7 +22,7 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
     Part* newPart = new Part("42J2235", 40, 44, 54, 60, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 0.25, 360, 360 + 90);
+    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360 + 30, 360 + 90);
     Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, TRUE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
     Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
     Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);

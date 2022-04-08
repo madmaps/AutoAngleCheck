@@ -44,6 +44,7 @@ private:
     float savedStartAngle;
     float savedEndAngle;
     float currentStep;
+    float averageAngle;
     std::vector<float> capturedAngles;
     wxTextCtrl* angleAverage;
     wxTextCtrl* sampleSize;

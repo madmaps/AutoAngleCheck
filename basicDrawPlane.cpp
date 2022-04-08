@@ -164,7 +164,8 @@ void BasicDrawPlane::render(wxDC& dc)
             {
                 total += angle;
             }
-            angleAverage->ChangeValue(wxString::FromDouble(total / capturedAngles.size(), 2));
+            averageAngle = total / capturedAngles.size();
+            angleAverage->ChangeValue(wxString::FromDouble(averageAngle, 2));
             sampleSize->ChangeValue(wxString::FromDouble((double)capturedAngles.size(),0));
         }
     }
@@ -181,7 +182,7 @@ void BasicDrawPlane::render(wxDC& dc)
     drawAngleRanges(dc);
 
 
-    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize, wxColour(255, 100, 0, 255));
+    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize * 1.2, wxColour(255, 100, 0, 255));
 
     currentPen.SetWidth(2);
     currentPen.SetColour(wxColour(128, 128, 128));
@@ -213,16 +214,29 @@ void BasicDrawPlane::render(wxDC& dc)
         goodAngle -= 180;
     }
     dc.DrawText(wxString::FromDouble(goodAngle, 2), cursorX - 25, cursorY + 20);
+    if(capturedAngles.size() > 0 && !captureMode)
+    {
+        wxColour angleColor(255, 0, 0, 255);
+        if(averageAngle <= myPart->getHighYellowAngle() && averageAngle >= myPart->getLowYellowAngle())
+        {
+            angleColor.Set(255, 255, 0, 255);
+        }
+        if(averageAngle <= myPart->getHighGreenAngle() && averageAngle >= myPart->getLowGreenAngle())
+        {
+            angleColor.Set(0, 255, 0, 255);
+        }
+        drawAngle(dc, -averageAngle, cursorX, cursorY, radiusSize, angleColor);
+    }
 }
 void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor)
 {
     float xStartRad = ((180 - inAngle) * 3.1415926535 * 2) / 360;
-    float xStart = inRad * 1.2 * sin(xStartRad);
+    float xStart = inRad * sin(xStartRad);
     float xEnd = xStart + inLocX;
     xStart = inLocX - xStart;
 
     float yStartRad = ((180 - inAngle) * 3.1415926535 * 2) / 360;
-    float yStart = inRad * 1.2 * cos(yStartRad);
+    float yStart = inRad * cos(yStartRad);
     float yEnd =  inLocY - yStart;
     yStart += inLocY;
     wxPen currentPen;
