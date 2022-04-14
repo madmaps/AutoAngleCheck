@@ -16,7 +16,7 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     imageHeight = 480;
     this->SetMinSize(wxSize(imageWidth,imageHeight));
     myImageAnal = new ImageAnalyzer();
-    myImageAnal->setAngleRange(360 , 360 * 2);
+    myImageAnal->setAngleRange(0, 360);
     goodCamera = true;
     camera.open(0);
     camera.set(cv::CAP_PROP_FRAME_WIDTH , imageWidth);
@@ -130,23 +130,22 @@ void BasicDrawPlane::render(wxDC& dc)
         myImageAnal->setAngleRange(myPart->getCaptureStartAngle(), myPart->getCaptureEndAngle());
         analyzeSize = myPart->getCaptureRadius();
         myImageAnal->setPiviotPoint(currentX, currentY);
-        float goodAngle = 360 * 2 - myImageAnal->getAngle();
+        float goodAngle = myImageAnal->getAngle();
+        if(goodAngle > 180)
+        {
+            goodAngle -= 180;
+        }
         if(myPart->getIsRadialSeal())
         {
             float offset = myPart->getMylarRadius() - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
             float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-            if(cursorX < 320)
+            if(cursorX < (imageWidth / 2))
             {
                 cursorAngle = -cursorAngle;
             }
             goodAngle = toMylarAngle((goodAngle) - cursorAngle, myPart->getMylarRadius(), offset);
         }
-        if(goodAngle > 180)
-        {
-            goodAngle -= 180;
-        }
         capturedAngles.push_back(goodAngle);
-
         cursorX = currentX;
         cursorY = currentY;
         currentStep += myPart->getCaptureStep();
@@ -198,12 +197,14 @@ void BasicDrawPlane::render(wxDC& dc)
     dc.SetPen(currentPen);
     dc.SetFont(newFont);
     dc.SetTextForeground(wxColor(255, 100, 0));
-    float goodAngle = 360 * 2 - myImageAnal->getAngle();
+    //float goodAngle = 360 * 2 - myImageAnal->getAngle();
+    float goodAngle = myImageAnal->getAngle();
+
     if(myPart->getIsRadialSeal())
     {
         float offset = myPart->getMylarRadius()  - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
         float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-        if(cursorX < 320)
+        if(cursorX < (imageWidth / 2))
         {
             cursorAngle = -cursorAngle;
         }
@@ -225,17 +226,29 @@ void BasicDrawPlane::render(wxDC& dc)
         {
             angleColor.Set(0, 255, 0, 255);
         }
-        drawAngle(dc, -averageAngle, cursorX, cursorY, radiusSize, angleColor);
+        goodAngle = averageAngle;
+        if(myPart->getIsRadialSeal())
+        {
+            float offset = myPart->getMylarRadius()  - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
+            float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
+            if(cursorX < (imageWidth / 2))
+            {
+                cursorAngle = -cursorAngle;
+            }
+            goodAngle = toCameraAngle(averageAngle + cursorAngle, myPart->getMylarRadius(), offset);
+        }
+
+        drawAngle(dc, goodAngle, cursorX, cursorY, radiusSize, angleColor);
     }
 }
 void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor)
 {
-    float xStartRad = ((180 - inAngle) * 3.1415926535 * 2) / 360;
+    float xStartRad = ((inAngle) * M_PI) / 180;
     float xStart = inRad * sin(xStartRad);
     float xEnd = xStart + inLocX;
     xStart = inLocX - xStart;
 
-    float yStartRad = ((180 - inAngle) * 3.1415926535 * 2) / 360;
+    float yStartRad = ((inAngle) * M_PI) / 180;
     float yStart = inRad * cos(yStartRad);
     float yEnd =  inLocY - yStart;
     yStart += inLocY;
@@ -328,10 +341,10 @@ float BasicDrawPlane::toMylarAngle(float inAngle, float mylarRadius, float yOffs
     }
     float correctValue = 0;
     bool negInAngle = false;
-    if(inAngle < 0)
+    if(inAngle > 90)
     {
         negInAngle = true;
-        inAngle = fabs(inAngle);
+        inAngle -= 90;
     }
     if(inAngle !=0 && inAngle != 180 && inAngle != 360)
     {
@@ -356,7 +369,7 @@ float BasicDrawPlane::toMylarAngle(float inAngle, float mylarRadius, float yOffs
     }
     if(negInAngle)
     {
-        correctValue = -(90 - (180 - (correctValue + inAngle)));
+        correctValue = 90 + (90 - (180 - (correctValue + inAngle)));
     }
     else
     {
@@ -372,7 +385,6 @@ float BasicDrawPlane::toCameraAngle(float inAngle, float mylarRadius, float yOff
     float correctValue = 0;
     float decimalPoint = 1;
     while(decimalPoint > 0.0001)
-
     {
         R = sqrt(pow((mylarRadius - correctValue), 2) + pow(correctValue * tan(inAngle * M_PI / 180), 2));
         if(R < K)

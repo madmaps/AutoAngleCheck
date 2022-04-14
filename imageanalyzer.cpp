@@ -80,7 +80,7 @@ std::vector<unsigned int> ImageAnalyzer::getVector(const float inAngle)const
         for(int i = 0; i < analyzLength; i++)
         {
             pointX = 0;
-            pointY = i;
+            pointY = -i;
             rotatedX = rotatePoint_X(pointX,pointY,inAngle);
             rotatedY = rotatePoint_Y(pointX,pointY,inAngle);
             rotatedX += piviotPoint_X;
@@ -151,12 +151,12 @@ unsigned char ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigne
 
 float ImageAnalyzer::rotatePoint_X(const float inX, const float inY, const float inAngle)const
 {
-    float radianAngle = (3.141592653589 * (360 - inAngle)) / 180;
+    float radianAngle = (3.141592653589 * (inAngle)) / 180;
     return inX * cos(radianAngle) - inY * sin(radianAngle);
 }
 float ImageAnalyzer::rotatePoint_Y(const float inX, const float inY, const float inAngle)const
 {
-    float radianAngle = (3.141592653589 * (360 - inAngle)) / 180;
+    float radianAngle = (3.141592653589 * (inAngle)) / 180;
     return inX * sin(radianAngle) + inY * cos(radianAngle);
 }
 

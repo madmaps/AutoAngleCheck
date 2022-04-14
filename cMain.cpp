@@ -21,12 +21,12 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
-    Part* newPart = new Part("42J2235", 40, 44, 54, 60, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360 + 30, 360 + 90);
-    Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, TRUE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, TRUE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
-    Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 360, 720);
+    Part* newPart = new Part("42J2235", 40 + 90, 44 + 90, 54 + 90, 60 + 90, FALSE, 7, 0.5f, 150, 240, 500, 240, 1, 128, 0.1, 0, 359);
+    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 32, 1, 30, 60);
+    Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, FALSE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
     listOfParts.push_back(newPart);
     listOfParts.push_back(newPart1);
     listOfParts.push_back(newPart2);
@@ -117,6 +117,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
         partNumListBox->Insert(currentPart->getPartName(), count);
         count++;
     }
+    partNumListBox->SetSelection(0);
 
     partNumSizer->Add(partNumEditSizer, 0, wxEXPAND | wxALL, 10);
     partNumSizer->Add(partNumListBox, 0, wxEXPAND | wxALL, 10);
@@ -184,6 +185,10 @@ void cMain::clear(wxCommandEvent& evt)
 cMain::~cMain()
 {
     delete timer;
+    for(Part* deleteMe : listOfParts)
+    {
+        delete deleteMe;
+    }
 }
 
 void cMain::partTextChange(wxCommandEvent& evt)
