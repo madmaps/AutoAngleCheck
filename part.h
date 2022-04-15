@@ -1,6 +1,7 @@
 #ifndef PART_H
 #define PART_H
 #include <string>
+#include "fixture.h"
 
 
 class Part
@@ -42,6 +43,8 @@ public:
     float getCaptureAngleStep()const;
     float getCaptureStartAngle()const;
     float getCaptureEndAngle()const;
+    std::vector<Fixture*> getFixtureList()const;
+    void addFixture(Fixture* inFixture);
 private:
     std::string partName;
     float lowYellowAngle;
@@ -60,6 +63,7 @@ private:
     float captureAngleStep;
     float captureStartAngle;
     float captureEndAngle;
+    std::vector<Fixture*> fixtureList;
 };
 
 #endif // PART_H

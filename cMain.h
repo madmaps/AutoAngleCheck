@@ -20,17 +20,22 @@ public:
     void capture(wxCommandEvent& evt);
     void clear(wxCommandEvent& evt);
     void partTextChange(wxCommandEvent& evt);
+    void fixTextChange(wxCommandEvent& evt);
     void changePartCmd(wxCommandEvent& evt);
+    void changeFixtureCmd(wxCommandEvent& evt);
 
 
 private:
     void changePart();
+    void changeFixture();
     RenderTimer* timer;
     BasicDrawPlane* drawPlane;
     AngleChart* chart;
     std::vector<Part*> listOfParts;
     wxListBox* partNumListBox;
+    wxListBox* fixtureListBox;
     wxTextCtrl* partNumTextCtrl;
+    wxTextCtrl* fixtureTextCtrl;
     wxTextCtrl* angleAverage;
 
 

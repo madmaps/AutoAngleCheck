@@ -1,4 +1,11 @@
 #include "part.h"
+#include <algorithm>
+
+
+bool cmpTwoFixtures(Fixture* fixtureOne, Fixture* fixtureTwo)
+{
+    return (*fixtureOne < *fixtureTwo);
+}
 
 Part::Part(const std::string inPartName,
            const float inLowYellowAngle,
@@ -129,4 +136,16 @@ float Part::getCaptureEndAngle()const
 {
     return captureEndAngle;
 }
+
+std::vector<Fixture*> Part::getFixtureList()const
+{
+    return fixtureList;
+}
+
+void Part::addFixture(Fixture* inFixture)
+{
+    fixtureList.push_back(inFixture);
+    sort(fixtureList.begin(), fixtureList.end(), cmpTwoFixtures);
+}
+
 

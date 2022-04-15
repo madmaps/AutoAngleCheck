@@ -1,6 +1,8 @@
 #include "cMain.h"
 #include <iostream>
 #include <wx/wx.h>
+#include "fixture.h"
+//#include "fixtureData.h"
 
 using namespace std;
 
@@ -9,9 +11,11 @@ BEGIN_EVENT_TABLE(cMain, wxFrame)
     EVT_CLOSE(cMain::onClose)
     EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
     EVT_TEXT(100054, cMain::partTextChange)
+    EVT_TEXT(100053, cMain::fixTextChange)
     EVT_BUTTON(100023, cMain::capture)
     EVT_BUTTON(100017, cMain::clear)
     EVT_LISTBOX(100082, cMain::changePartCmd)
+    EVT_LISTBOX(100027, cMain::changeFixtureCmd)
 END_EVENT_TABLE()
 
 bool cmpTwoParts(Part* partOne, Part* partTwo)
@@ -21,7 +25,23 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
-    Part* newPart = new Part("42J2235", 40 + 90, 44 + 90, 54 + 90, 60 + 90, FALSE, 7, 0.5f, 150, 240, 500, 240, 1, 128, 0.1, 0, 359);
+    Part* newPart = new Part("42J2235", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 1, 128, 0.1, 0, 359);
+    Fixture* newFixture0 = new Fixture("5428");
+    newFixture0->addDataPoint(new FixtureData("SN0025634", 45.323, "", std::chrono::system_clock::now()));
+    newFixture0->addDataPoint(new FixtureData("SN0025635", 46.549, "", std::chrono::system_clock::now()));
+    newFixture0->addDataPoint(new FixtureData("SN0025636", 41.881, "", std::chrono::system_clock::now()));
+    newFixture0->addDataPoint(new FixtureData("SN0025637", 48.725, "", std::chrono::system_clock::now()));
+    newFixture0->addDataPoint(new FixtureData("SN0025638", 44.522, "", std::chrono::system_clock::now()));
+    newPart->addFixture(newFixture0);
+    Fixture* newFixture1 = new Fixture("4332");
+    newFixture1->addDataPoint(new FixtureData("SN0024634", 43.323, "", std::chrono::system_clock::now()));
+    newFixture1->addDataPoint(new FixtureData("SN0025635", 47.549, "", std::chrono::system_clock::now()));
+    newFixture1->addDataPoint(new FixtureData("SN0025666", 43.881, "", std::chrono::system_clock::now()));
+    newFixture1->addDataPoint(new FixtureData("SN0025337", 49.725, "", std::chrono::system_clock::now()));
+    newFixture1->addDataPoint(new FixtureData("SN0022238", 42.522, "", std::chrono::system_clock::now()));
+    newPart->addFixture(newFixture1);
+
+
     Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 32, 1, 30, 60);
     Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, FALSE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
     Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
@@ -86,18 +106,12 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxStaticBoxSizer* fixtureSizer = new wxStaticBoxSizer(wxVERTICAL, this, wxString("Fixture"));
     wxBoxSizer* fixtureEditSizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* fixtureStaticText = new wxStaticText(this, wxID_ANY, "Fixture #");
-    wxTextCtrl* fixtureTextCtrl = new wxTextCtrl(this, wxID_ANY);
+    fixtureTextCtrl = new wxTextCtrl(this, 100053);
     fixtureEditSizer->Add(fixtureStaticText, 0, wxEXPAND | wxALL, 10);
     fixtureEditSizer->Add(fixtureTextCtrl, 0, wxEXPAND | wxALL, 10);
 
-    wxListBox* fixtureListBox = new wxListBox(this, wxID_ANY);
+    fixtureListBox = new wxListBox(this, 100027);
     fixtureListBox->SetMaxSize(wxSize(999,100));
-    fixtureListBox->Insert(wxString("5142"), 0);
-    fixtureListBox->Insert(wxString("2141"), 0);
-    fixtureListBox->Insert(wxString("3169"), 0);
-    fixtureListBox->Insert(wxString("2219"), 0);
-    fixtureListBox->Insert(wxString("9814"), 0);
-
 
     fixtureSizer->Add(fixtureEditSizer, 0, wxEXPAND | wxALL, 10);
     fixtureSizer->Add(fixtureListBox, 0, wxEXPAND | wxALL, 10);
@@ -159,6 +173,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
     topSizer->Add(sizer, 0, wxEXPAND | wxALL, 10);
     chart = new AngleChart(this);
+    chart->setPart(listOfParts.at(0));
 
     topSizer->Add(chart, 0, wxEXPAND | wxALL, 10);
 
@@ -207,6 +222,25 @@ void cMain::partTextChange(wxCommandEvent& evt)
     changePart();
 }
 
+void cMain::fixTextChange(wxCommandEvent& evt)
+{
+    if(partNumListBox->GetSelection() > 0)
+    {
+        int index = 0;
+        unsigned int counter = 1;
+        std::vector<Fixture*> listOfFixtures = listOfParts.at(partNumListBox->GetSelection())->getFixtureList();
+        for(Fixture* searchFixture : listOfFixtures)
+        {
+            if(searchFixture->getSerialNumber().compare(fixtureTextCtrl->GetLineText(0).c_str()) < 0)
+            {
+                index = counter;
+            }
+            counter++;
+        }
+        fixtureListBox->SetSelection(index);
+        changeFixture();
+    }
+}
 
 void cMain::sizeEvent(wxScrollEvent &evt)
 {
@@ -225,9 +259,36 @@ void cMain::changePartCmd(wxCommandEvent& evt)
     changePart();
 }
 
+void cMain::changeFixtureCmd(wxCommandEvent& evt)
+{
+    changeFixture();
+}
+
+
 void cMain::changePart()
 {
     Part* newPart = listOfParts.at(partNumListBox->GetSelection());
     drawPlane->addPart(newPart);
+    chart->setPart(newPart);
+    std::vector<Fixture*> listOfFixtures = newPart->getFixtureList();
+    fixtureListBox->Clear();
+    unsigned int count = 0;
+    for(Fixture* currentFixture : listOfFixtures)
+    {
+        fixtureListBox->Insert(currentFixture->getSerialNumber(), count);
+        count++;
+    }
+    if(listOfFixtures.size() > 0)
+    {
+        chart->setFixture(0);
+        fixtureListBox->SetSelection(0);
+    }
+}
+
+void cMain::changeFixture()
+{
+    chart->setFixture(fixtureListBox->GetSelection());
+    chart->Refresh();
+    chart->Update();
 }
 

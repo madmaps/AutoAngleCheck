@@ -1,6 +1,7 @@
 #include "basicDrawPlane.h"
 #include <wx/wx.h>
 #include <iostream>
+#include <wx/dcbuffer.h>
 
 
 BEGIN_EVENT_TABLE(BasicDrawPlane, wxPanel)
@@ -74,7 +75,9 @@ void BasicDrawPlane::setCameraPhysicalDimensions(const float inPhysicalWidth, co
 
 void BasicDrawPlane::paintEvent(wxPaintEvent &evt)
 {
-    wxPaintDC dc(this);
+    //wxPaintDC dc(this);
+    wxBufferedPaintDC dc(this);
+    this->PrepareDC(dc);
     render(dc);
 }
 

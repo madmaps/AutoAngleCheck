@@ -2,6 +2,7 @@
 #define ANGLECHART_H
 #include <wx/wx.h>
 #include <wx/vscroll.h>
+#include "part.h"
 
 class AngleChart : public wxScrolledWindow
 {
@@ -9,16 +10,18 @@ public:
     AngleChart(wxFrame* inParent);
     void paintEvent(wxPaintEvent& evt);
     void render(wxDC& dc);
-    virtual wxCoord OnGetRowHeight(size_t row)const;
-    virtual wxCoord OnGetColumnWidth(size_t column)const;
+    void setPart(Part* inPart);
+    void setFixture(const unsigned int inFixture);
 private:
-    float lowYellowAngle;
-    float lowGreenAngle;
-    float highGreenAngle;
-    float highYellowAngle;
+    Part* currentPart;
+    int currentFixture;
+    unsigned int width;
+    unsigned int height;
     unsigned int numCols;
+    unsigned int numRows;
     unsigned int serialNumberLength;
-    unsigned int colWidth;
+    unsigned int angleTextLength;
+    unsigned int rowWidth;
     unsigned int colHeight;
     unsigned int divisions;
     DECLARE_EVENT_TABLE()

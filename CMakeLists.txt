@@ -26,6 +26,10 @@ add_executable(AngleCheckGUI
                angleChart.h
                angleChart.cpp
                part.h
-               part.cpp)
+               part.cpp
+               fixture.h
+               fixture.cpp
+               fixtureData.h
+               fixtureData.cpp)
 target_link_libraries(AngleCheckGUI ${wxWidgets_LIBRARIES} ${OpenCV_LIBS})
 
