@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include "imageanalyzer.h"
 #include "part.h"
+#include "angleChart.h"
 
 class BasicDrawPlane : public wxPanel
 {
@@ -20,6 +21,8 @@ public:
     void moveCursor(wxMouseEvent& evt);
     void setAngleAverage(wxTextCtrl* inAngleAverage);
     void setSampleSize(wxTextCtrl* inSampleSize);
+    void setCurrentFixture(const int inCurrentFixture);
+    void setAngleChart(AngleChart* inAngleChart);
 
 
 private:
@@ -48,6 +51,9 @@ private:
     std::vector<float> capturedAngles;
     wxTextCtrl* angleAverage;
     wxTextCtrl* sampleSize;
+    AngleChart* chart;
+    int currentFixture;
+
 
     void drawArc(wxDC& inDC, float startAngle, float endAngle,int inLocX, int inLocY, int inRad, wxColour inColor);
     void drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY, int inRad, wxColour inColor);

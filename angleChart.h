@@ -12,6 +12,7 @@ public:
     void render(wxDC& dc);
     void setPart(Part* inPart);
     void setFixture(const unsigned int inFixture);
+    Fixture* getCurrentFixture()const;
 private:
     Part* currentPart;
     int currentFixture;

@@ -27,6 +27,7 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     cursorX = imageWidth / 2;
     cursorY = imageHeight / 2;
     captureMode = false;
+    currentFixture = -1;
     if(!camera.isOpened())
     {
        goodCamera = false;
@@ -67,6 +68,12 @@ void BasicDrawPlane::setSampleSize(wxTextCtrl* inSampleSize)
     sampleSize = inSampleSize;
 }
 
+void BasicDrawPlane::setAngleChart(AngleChart* inAngleChart)
+{
+    chart = inAngleChart;
+}
+
+
 void BasicDrawPlane::setCameraPhysicalDimensions(const float inPhysicalWidth, const float inPhysicalHeight)
 {
     physicalWidth = inPhysicalWidth;
@@ -86,6 +93,11 @@ void BasicDrawPlane::updateSize(int inSize)
     myImageAnal->setAnalyzLength(inSize);
     analyzeSize = inSize;
     paintNow();
+}
+
+void BasicDrawPlane::setCurrentFixture(const int inCurrentFixture)
+{
+    currentFixture = inCurrentFixture;
 }
 
 void BasicDrawPlane::moveCursor(wxMouseEvent& evt)
@@ -167,6 +179,11 @@ void BasicDrawPlane::render(wxDC& dc)
                 total += angle;
             }
             averageAngle = total / capturedAngles.size();
+            cout << currentFixture << endl;
+            FixtureData* currentData = myPart->getFixtureList().at(currentFixture)->getFixtureData(myPart->getFixtureList().at(currentFixture)->getDataSize()-1);
+            currentData->setAngleValue(averageAngle);
+            chart->Refresh();
+            chart->Update();
             angleAverage->ChangeValue(wxString::FromDouble(averageAngle, 2));
             sampleSize->ChangeValue(wxString::FromDouble((double)capturedAngles.size(),0));
         }

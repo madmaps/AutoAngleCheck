@@ -18,3 +18,15 @@ float FixtureData::getAngleValue()const
     return angleValue;
 }
 
+void FixtureData::setSerialNumber(const std::string& inNewSerialNumber)
+{
+    serialNumber = inNewSerialNumber;
+}
+
+void FixtureData::setAngleValue(const float inAngleValue)
+{
+    angleValue = inAngleValue;
+}
+
+
+

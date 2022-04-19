@@ -10,6 +10,8 @@ public:
     FixtureData(const std::string& inSerialNumber, const float inAngleValue, const std::string& inComment, const std::chrono::time_point<std::chrono::system_clock>& inDateTime);
     std::string getSerialNumber()const;
     float getAngleValue()const;
+    void setSerialNumber(const std::string& inNewSerialNumber);
+    void setAngleValue(const float inAngleValue);
 private:
     std::string serialNumber;
     float angleValue;

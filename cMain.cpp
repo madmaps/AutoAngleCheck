@@ -12,6 +12,7 @@ BEGIN_EVENT_TABLE(cMain, wxFrame)
     EVT_COMMAND_SCROLL(100001,cMain::sizeEvent)
     EVT_TEXT(100054, cMain::partTextChange)
     EVT_TEXT(100053, cMain::fixTextChange)
+    EVT_TEXT(100077, cMain::serialTextChange)
     EVT_BUTTON(100023, cMain::capture)
     EVT_BUTTON(100017, cMain::clear)
     EVT_LISTBOX(100082, cMain::changePartCmd)
@@ -25,7 +26,8 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
-    Part* newPart = new Part("42J2235", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 1, 128, 0.1, 0, 359);
+    currentFixtureData = 0;
+    Part* newPart = new Part("42J2235", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 20, 70);
     Fixture* newFixture0 = new Fixture("5428");
     newFixture0->addDataPoint(new FixtureData("SN0025634", 45.323, "", std::chrono::system_clock::now()));
     newFixture0->addDataPoint(new FixtureData("SN0025635", 46.549, "", std::chrono::system_clock::now()));
@@ -42,7 +44,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     newPart->addFixture(newFixture1);
 
 
-    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 32, 1, 30, 60);
+    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 90);
     Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, FALSE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
     Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
     Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
@@ -137,7 +139,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     partNumSizer->Add(partNumListBox, 0, wxEXPAND | wxALL, 10);
 
     wxStaticText* serialNumStaticText = new wxStaticText(this, wxID_ANY, wxString("Serial#      "));
-    wxTextCtrl* serialNumTextCtrl = new wxTextCtrl(this, wxID_ANY);
+    serialNumTextCtrl = new wxTextCtrl(this, 100077);
     serialNumTextCtrl->SetMinSize(wxSize(150,40));
     wxBoxSizer* serialNumSizer = new wxBoxSizer(wxHORIZONTAL);
     serialNumSizer->Add(serialNumStaticText, 0, wxEXPAND | wxALL, 10);
@@ -174,7 +176,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     topSizer->Add(sizer, 0, wxEXPAND | wxALL, 10);
     chart = new AngleChart(this);
     chart->setPart(listOfParts.at(0));
-
+    drawPlane->setAngleChart(chart);
     topSizer->Add(chart, 0, wxEXPAND | wxALL, 10);
 
 
@@ -224,7 +226,7 @@ void cMain::partTextChange(wxCommandEvent& evt)
 
 void cMain::fixTextChange(wxCommandEvent& evt)
 {
-    if(partNumListBox->GetSelection() > 0)
+    if(partNumListBox->GetSelection() >= 0)
     {
         int index = 0;
         unsigned int counter = 1;
@@ -241,6 +243,26 @@ void cMain::fixTextChange(wxCommandEvent& evt)
         changeFixture();
     }
 }
+
+void cMain::serialTextChange(wxCommandEvent& evt)
+{
+    if(fixtureListBox->GetSelection() >= 0)
+    {
+        if(currentFixtureData == 0)
+        {
+            currentFixtureData = new FixtureData(std::string(serialNumTextCtrl->GetLineText(0).c_str()), 0, "", std::chrono::system_clock::now());
+            Fixture* currentFixture = listOfParts.at(partNumListBox->GetSelection())->getFixtureList().at(fixtureListBox->GetSelection());
+            currentFixture->addDataPoint(currentFixtureData, false);
+        }
+        else
+        {
+            currentFixtureData->setSerialNumber(std::string(serialNumTextCtrl->GetLineText(0).c_str()));
+        }
+        chart->Refresh();
+        chart->Update();
+    }
+}
+
 
 void cMain::sizeEvent(wxScrollEvent &evt)
 {
@@ -287,6 +309,7 @@ void cMain::changePart()
 
 void cMain::changeFixture()
 {
+    drawPlane->setCurrentFixture(fixtureListBox->GetSelection());
     chart->setFixture(fixtureListBox->GetSelection());
     chart->Refresh();
     chart->Update();

@@ -6,6 +6,7 @@
 #include "renderTimer.h"
 #include "basicDrawPlane.h"
 #include "angleChart.h"
+#include "fixtureData.h"
 
 
 
@@ -23,6 +24,7 @@ public:
     void fixTextChange(wxCommandEvent& evt);
     void changePartCmd(wxCommandEvent& evt);
     void changeFixtureCmd(wxCommandEvent& evt);
+    void serialTextChange(wxCommandEvent& evt);
 
 
 private:
@@ -37,6 +39,8 @@ private:
     wxTextCtrl* partNumTextCtrl;
     wxTextCtrl* fixtureTextCtrl;
     wxTextCtrl* angleAverage;
+    wxTextCtrl* serialNumTextCtrl;
+    FixtureData* currentFixtureData;
 
 
     DECLARE_EVENT_TABLE()

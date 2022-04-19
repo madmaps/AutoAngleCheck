@@ -52,6 +52,15 @@ void AngleChart::setFixture(const unsigned int inFixture)
     Update();
 }
 
+Fixture* AngleChart::getCurrentFixture() const
+{
+    if(currentFixture >= 0)
+    {
+        return currentPart->getFixtureList().at(currentFixture);
+    }
+    return 0;
+}
+
 
 void AngleChart::render(wxDC& dc)
 {
@@ -110,7 +119,6 @@ void AngleChart::render(wxDC& dc)
     }
     if(currentFixture >= 0)
     {
-
         unsigned int sizeOfData = currentPart->getFixtureList().at(currentFixture)->getDataSize();
         if(sizeOfData > 0)
         {
@@ -118,6 +126,11 @@ void AngleChart::render(wxDC& dc)
             for(unsigned int i = 0; i < sizeOfData; i++)
             {
                 currentData = currentPart->getFixtureList().at(currentFixture)->getFixtureData(i);
+                dc.SetTextForeground(wxColor(0, 0, 0));
+                if(i == sizeOfData - 1 && !currentPart->getFixtureList().at(currentFixture)->getIsSubmitted())
+                {
+                    dc.SetTextForeground(wxColor(255, 0, 0));
+                }
                 dc.DrawRotatedText(wxString(currentData->getSerialNumber()), angleTextLength + (i * rowWidth), serialNumberLength - 10, 90);
                 dc.DrawCircle(angleTextLength + (rowWidth / 2) + (i * rowWidth), serialNumberLength + ((currentData->getAngleValue() - startingAngle) * (colHeight * divisions)), 3);
             }
@@ -125,5 +138,4 @@ void AngleChart::render(wxDC& dc)
     }
 
 }
-
 

@@ -3,6 +3,7 @@
 Fixture::Fixture(const std::string inSerialNumber)
 {
     serialNumber = inSerialNumber;
+    isSubmitted = true;
 }
 
 bool Fixture::operator<(const Fixture& RHS)
@@ -10,9 +11,10 @@ bool Fixture::operator<(const Fixture& RHS)
     return (serialNumber.compare(RHS.serialNumber) < 0);
 }
 
-void Fixture::addDataPoint(FixtureData* inData)
+void Fixture::addDataPoint(FixtureData* inData, bool inIsSubmitted)
 {
     listOfData.push_back(inData);
+    isSubmitted = inIsSubmitted;
 }
 
 FixtureData* Fixture::getFixtureData(const unsigned int inLocation)const
@@ -28,4 +30,14 @@ unsigned int Fixture::getDataSize()const
 std::string Fixture::getSerialNumber()const
 {
     return serialNumber;
+}
+
+bool Fixture::getIsSubmitted()const
+{
+    return isSubmitted;
+}
+
+void Fixture::submit()
+{
+    isSubmitted = true;
 }
