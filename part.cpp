@@ -46,6 +46,17 @@ Part::Part(const std::string inPartName,
 
 }
 
+Part::~Part()
+{
+    for(Fixture* deleteMe : fixtureList)
+    {
+        delete deleteMe;
+        deleteMe = 0;
+    }
+    fixtureList.clear();
+}
+
+
 bool Part::operator<(const Part& RHS)
 {
     return (partName.compare(RHS.partName) < 0);

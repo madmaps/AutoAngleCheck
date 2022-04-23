@@ -24,6 +24,7 @@ public:
          const float inCaptureAngleStep,
          const float inCaptureAngleStart,
          const float inCaptureAngleEnd);
+    ~Part();
     bool operator<(const Part& RHS);
 
     std::string getPartName()const;

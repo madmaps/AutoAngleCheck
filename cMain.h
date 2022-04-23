@@ -25,6 +25,7 @@ public:
     void changePartCmd(wxCommandEvent& evt);
     void changeFixtureCmd(wxCommandEvent& evt);
     void serialTextChange(wxCommandEvent& evt);
+    void submit(wxCommandEvent& evt);
 
 
 private:

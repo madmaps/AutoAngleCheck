@@ -28,6 +28,7 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     cursorY = imageHeight / 2;
     captureMode = false;
     currentFixture = -1;
+    myPart = 0;
     if(!camera.isOpened())
     {
        goodCamera = false;
@@ -82,7 +83,6 @@ void BasicDrawPlane::setCameraPhysicalDimensions(const float inPhysicalWidth, co
 
 void BasicDrawPlane::paintEvent(wxPaintEvent &evt)
 {
-    //wxPaintDC dc(this);
     wxBufferedPaintDC dc(this);
     this->PrepareDC(dc);
     render(dc);
@@ -129,7 +129,7 @@ void BasicDrawPlane::render(wxDC& dc)
     myImageAnal->setPiviotPoint(cursorX, cursorY);
     wxImage bitMap(frame.cols, frame.rows, frame.data, true);
     dc.DrawBitmap(wxBitmap(bitMap, 24), 0, 0);
-    if(captureMode)
+    if(captureMode && myPart != 0)
     {
         currentPen.SetWidth(25);
         currentPen.SetColour(wxColour(255, 255 , 255, 100));
@@ -179,11 +179,17 @@ void BasicDrawPlane::render(wxDC& dc)
                 total += angle;
             }
             averageAngle = total / capturedAngles.size();
-            cout << currentFixture << endl;
-            FixtureData* currentData = myPart->getFixtureList().at(currentFixture)->getFixtureData(myPart->getFixtureList().at(currentFixture)->getDataSize()-1);
-            currentData->setAngleValue(averageAngle);
-            chart->Refresh();
-            chart->Update();
+            if(currentFixture != -1)
+            {
+                Fixture* thisFixture = myPart->getFixtureList().at(currentFixture);
+                if(!thisFixture->getIsSubmitted())
+                {
+                    FixtureData* currentData = thisFixture->getFixtureData(myPart->getFixtureList().at(currentFixture)->getDataSize()-1);
+                    currentData->setAngleValue(averageAngle);
+                    chart->Refresh();
+                    chart->Update();
+                }
+            }
             angleAverage->ChangeValue(wxString::FromDouble(averageAngle, 2));
             sampleSize->ChangeValue(wxString::FromDouble((double)capturedAngles.size(),0));
         }
@@ -219,23 +225,25 @@ void BasicDrawPlane::render(wxDC& dc)
     dc.SetTextForeground(wxColor(255, 100, 0));
     //float goodAngle = 360 * 2 - myImageAnal->getAngle();
     float goodAngle = myImageAnal->getAngle();
-
-    if(myPart->getIsRadialSeal())
+    if(myPart != 0)
     {
-        float offset = myPart->getMylarRadius()  - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
-        float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-        if(cursorX < (imageWidth / 2))
+        if(myPart->getIsRadialSeal())
         {
-            cursorAngle = -cursorAngle;
+            float offset = myPart->getMylarRadius()  - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
+            float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
+            if(cursorX < (imageWidth / 2))
+            {
+                cursorAngle = -cursorAngle;
+            }
+            goodAngle = toMylarAngle((goodAngle) + cursorAngle, myPart->getMylarRadius(), offset);
         }
-        goodAngle = toMylarAngle((goodAngle) + cursorAngle, myPart->getMylarRadius(), offset);
     }
     if(goodAngle > 180)
     {
         goodAngle -= 180;
     }
     dc.DrawText(wxString::FromDouble(goodAngle, 2), cursorX - 25, cursorY + 20);
-    if(capturedAngles.size() > 0 && !captureMode)
+    if(myPart != 0 && capturedAngles.size() > 0 && !captureMode)
     {
         wxColour angleColor(255, 0, 0, 255);
         if(averageAngle <= myPart->getHighYellowAngle() && averageAngle >= myPart->getLowYellowAngle())
@@ -281,32 +289,34 @@ void BasicDrawPlane::drawAngle(wxDC& inDC, float inAngle, int inLocX, int inLocY
 
 void BasicDrawPlane::drawAngleRanges(wxDC& inDC)
 {
-    float cursorAngle = 0;
-    float yellowLow = myPart->getLowYellowAngle();
-    float greenLow = myPart->getLowGreenAngle();
-    float greenHigh = myPart->getHighGreenAngle();
-    float yellowHigh = myPart->getHighYellowAngle();
-    if(myPart->getIsRadialSeal())
+    if(myPart != 0)
     {
-        float offset = myPart->getMylarRadius() - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
-        cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-        if(cursorX < 320)
+        float cursorAngle = 0;
+        float yellowLow = myPart->getLowYellowAngle();
+        float greenLow = myPart->getLowGreenAngle();
+        float greenHigh = myPart->getHighGreenAngle();
+        float yellowHigh = myPart->getHighYellowAngle();
+        if(myPart->getIsRadialSeal())
         {
-            cursorAngle = -cursorAngle;
+            float offset = myPart->getMylarRadius() - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
+            cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
+            if(cursorX < 320)
+            {
+                cursorAngle = -cursorAngle;
+            }
+            yellowLow = toCameraAngle(myPart->getLowYellowAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
+            greenLow = toCameraAngle(myPart->getLowGreenAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
+            greenHigh = toCameraAngle(myPart->getHighGreenAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
+            yellowHigh = toCameraAngle(myPart->getHighYellowAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
         }
-        yellowLow = toCameraAngle(myPart->getLowYellowAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
-        greenLow = toCameraAngle(myPart->getLowGreenAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
-        greenHigh = toCameraAngle(myPart->getHighGreenAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
-        yellowHigh = toCameraAngle(myPart->getHighYellowAngle(), myPart->getMylarRadius(), offset) - cursorAngle;
+        for(unsigned int i = 0; i < 2; i++)
+        {
+            drawArc(inDC, greenLow + (180 * i), greenHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(0, 255, 0, 64));
+            drawArc(inDC, yellowLow + (180 * i), greenLow + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
+            drawArc(inDC, greenHigh + (180 * i), yellowHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
+            drawArc(inDC, yellowHigh + (180 * i), yellowLow + (180 * (i + 1)), cursorX, cursorY, radiusSize, wxColour(255, 0, 0, 32));
+        }
     }
-    for(unsigned int i = 0; i < 2; i++)
-    {
-        drawArc(inDC, greenLow + (180 * i), greenHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(0, 255, 0, 64));
-        drawArc(inDC, yellowLow + (180 * i), greenLow + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
-        drawArc(inDC, greenHigh + (180 * i), yellowHigh + (180 * i), cursorX, cursorY, radiusSize, wxColour(255, 255, 0, 64));
-        drawArc(inDC, yellowHigh + (180 * i), yellowLow + (180 * (i + 1)), cursorX, cursorY, radiusSize, wxColour(255, 0, 0, 32));
-    }
-
 }
 
 

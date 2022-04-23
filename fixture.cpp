@@ -27,6 +27,17 @@ unsigned int Fixture::getDataSize()const
     return listOfData.size();
 }
 
+void Fixture::popData()
+{
+    if(!isSubmitted)
+    {
+        delete listOfData.at(listOfData.size() - 1);
+        listOfData.pop_back();
+        isSubmitted = true;
+    }
+}
+
+
 std::string Fixture::getSerialNumber()const
 {
     return serialNumber;
@@ -39,5 +50,8 @@ bool Fixture::getIsSubmitted()const
 
 void Fixture::submit()
 {
-    isSubmitted = true;
+    if(!isSubmitted)
+    {
+        isSubmitted = true;
+    }
 }

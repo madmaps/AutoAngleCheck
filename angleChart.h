@@ -13,6 +13,8 @@ public:
     void setPart(Part* inPart);
     void setFixture(const unsigned int inFixture);
     Fixture* getCurrentFixture()const;
+    void clearUnsubmitted();
+    void submit();
 private:
     Part* currentPart;
     int currentFixture;

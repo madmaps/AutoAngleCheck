@@ -15,6 +15,7 @@ public:
     unsigned int getDataSize()const;
     std::string getSerialNumber()const;
     bool getIsSubmitted()const;
+    void popData();
     void submit();
 private:
     std::string serialNumber;

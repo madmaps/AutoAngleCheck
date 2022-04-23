@@ -22,6 +22,7 @@ AngleChart::AngleChart(wxFrame* inParent) : wxScrolledWindow(inParent, wxID_ANY)
     rowWidth = 25;
     colHeight = 20;
     divisions = 2;
+    currentPart = 0;
 
 
     width = angleTextLength + (rowWidth * numRows);
@@ -36,6 +37,33 @@ void AngleChart::paintEvent(wxPaintEvent& evt)
     this->DoPrepareDC(dc);
     render(dc);
 }
+
+void AngleChart::clearUnsubmitted()
+{
+    if(currentPart != 0)
+    {
+        if(currentFixture != -1)
+        {
+            Fixture* thisFixture = currentPart->getFixtureList().at(currentFixture);
+            thisFixture->popData();
+        }
+    }
+}
+
+void AngleChart::submit()
+{
+    if(currentPart != 0)
+    {
+        if(currentFixture != -1)
+        {
+            Fixture* thisFixture = currentPart->getFixtureList().at(currentFixture);
+            thisFixture->submit();
+        }
+    }
+}
+
+
+
 
 void AngleChart::setPart(Part* inPart)
 {
@@ -64,78 +92,80 @@ Fixture* AngleChart::getCurrentFixture() const
 
 void AngleChart::render(wxDC& dc)
 {
-    dc.SetBackground(wxColour(255, 255, 255));
-    dc.Clear();
-    wxPen currentPen;
-    wxBrush currentBrush;
-    int redTopRect = serialNumberLength;
-    int redHeight = numCols * colHeight;
-    currentPen.SetColour(wxColour(205, 0, 0));
-    currentBrush.SetColour(wxColour(205, 0, 0));
-    dc.SetPen(currentPen);
-    dc.SetBrush(currentBrush);
-    dc.DrawRectangle(0, redTopRect, width, redHeight);
-
-
-    int yellowTopRect = serialNumberLength + (numCols / 2) * colHeight - ((currentPart->getHighYellowAngle() - currentPart->getLowYellowAngle()) / 2) * divisions * colHeight;
-    int yellowHeight = (currentPart->getHighYellowAngle() - currentPart->getLowYellowAngle()) * divisions * colHeight;
-
-    currentPen.SetColour(wxColour(225, 225, 0));
-    currentBrush.SetColour(wxColour(225, 225, 0));
-    dc.SetPen(currentPen);
-    dc.SetBrush(currentBrush);
-    dc.DrawRectangle(0, yellowTopRect, width, yellowHeight);
-
-    int greenTopRect = serialNumberLength + (numCols / 2) * colHeight - ((currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) / 2) * divisions * colHeight;
-    int greenHeight = (currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) * divisions * colHeight;
-    currentPen.SetColour(wxColour(0, 150, 0));
-    currentBrush.SetColour(wxColour(0, 150, 0));
-    dc.SetPen(currentPen);
-    dc.SetBrush(currentBrush);
-    dc.DrawRectangle(0, greenTopRect, width, greenHeight);
-
-    currentPen.SetColour(wxColour(255, 255, 255));
-    currentBrush.SetColour(wxColour(255, 255, 255));
-    dc.SetPen(currentPen);
-    dc.SetBrush(currentBrush);
-    dc.DrawRectangle(0, 0, width, serialNumberLength);
-
-    currentPen.SetColour(wxColour(0, 0, 0));
-    dc.SetPen(currentPen);
-    for(unsigned int i = 0; i <= numCols; i++)
+    if(currentPart != 0)
     {
-        dc.DrawLine(0, serialNumberLength + (i * colHeight), width, serialNumberLength + (i * colHeight));
-    }
-    for(unsigned int i = 0; i <= numRows; i++)
-    {
-        dc.DrawLine(angleTextLength + (i * rowWidth), 0, angleTextLength + (i * rowWidth), height);
-    }
-    float greenPixelEnd = serialNumberLength + (numCols / 2) * colHeight + ((currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) / 2) * divisions * colHeight;
-    float numOfColsToBegin = (greenPixelEnd - serialNumberLength) / colHeight;
-    float startingAngle = currentPart->getHighGreenAngle() - (numOfColsToBegin / divisions);
-    for(unsigned int i = 0; i <= numCols; i++)
-    {
-        dc.DrawText(wxString::Format(wxT("%.1f"), (startingAngle + ((float)i / (float)divisions))), 10, serialNumberLength + (i * colHeight));
-    }
-    if(currentFixture >= 0)
-    {
-        unsigned int sizeOfData = currentPart->getFixtureList().at(currentFixture)->getDataSize();
-        if(sizeOfData > 0)
+        dc.SetBackground(wxColour(255, 255, 255));
+        dc.Clear();
+        wxPen currentPen;
+        wxBrush currentBrush;
+        int redTopRect = serialNumberLength;
+        int redHeight = numCols * colHeight;
+        currentPen.SetColour(wxColour(205, 0, 0));
+        currentBrush.SetColour(wxColour(205, 0, 0));
+        dc.SetPen(currentPen);
+        dc.SetBrush(currentBrush);
+        dc.DrawRectangle(0, redTopRect, width, redHeight);
+
+
+        int yellowTopRect = serialNumberLength + (numCols / 2) * colHeight - ((currentPart->getHighYellowAngle() - currentPart->getLowYellowAngle()) / 2) * divisions * colHeight;
+        int yellowHeight = (currentPart->getHighYellowAngle() - currentPart->getLowYellowAngle()) * divisions * colHeight;
+
+        currentPen.SetColour(wxColour(225, 225, 0));
+        currentBrush.SetColour(wxColour(225, 225, 0));
+        dc.SetPen(currentPen);
+        dc.SetBrush(currentBrush);
+        dc.DrawRectangle(0, yellowTopRect, width, yellowHeight);
+
+        int greenTopRect = serialNumberLength + (numCols / 2) * colHeight - ((currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) / 2) * divisions * colHeight;
+        int greenHeight = (currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) * divisions * colHeight;
+        currentPen.SetColour(wxColour(0, 150, 0));
+        currentBrush.SetColour(wxColour(0, 150, 0));
+        dc.SetPen(currentPen);
+        dc.SetBrush(currentBrush);
+        dc.DrawRectangle(0, greenTopRect, width, greenHeight);
+
+        currentPen.SetColour(wxColour(255, 255, 255));
+        currentBrush.SetColour(wxColour(255, 255, 255));
+        dc.SetPen(currentPen);
+        dc.SetBrush(currentBrush);
+        dc.DrawRectangle(0, 0, width, serialNumberLength);
+
+        currentPen.SetColour(wxColour(0, 0, 0));
+        dc.SetPen(currentPen);
+        for(unsigned int i = 0; i <= numCols; i++)
         {
-            FixtureData* currentData = 0;
-            for(unsigned int i = 0; i < sizeOfData; i++)
+            dc.DrawLine(0, serialNumberLength + (i * colHeight), width, serialNumberLength + (i * colHeight));
+        }
+        for(unsigned int i = 0; i <= numRows; i++)
+        {
+            dc.DrawLine(angleTextLength + (i * rowWidth), 0, angleTextLength + (i * rowWidth), height);
+        }
+        float greenPixelEnd = serialNumberLength + (numCols / 2) * colHeight + ((currentPart->getHighGreenAngle() - currentPart->getLowGreenAngle()) / 2) * divisions * colHeight;
+        float numOfColsToBegin = (greenPixelEnd - serialNumberLength) / colHeight;
+        float startingAngle = currentPart->getHighGreenAngle() - (numOfColsToBegin / divisions);
+        for(unsigned int i = 0; i <= numCols; i++)
+        {
+            dc.DrawText(wxString::Format(wxT("%.1f"), (startingAngle + ((float)i / (float)divisions))), 10, serialNumberLength + (i * colHeight));
+        }
+        if(currentFixture >= 0)
+        {
+            unsigned int sizeOfData = currentPart->getFixtureList().at(currentFixture)->getDataSize();
+            if(sizeOfData > 0)
             {
-                currentData = currentPart->getFixtureList().at(currentFixture)->getFixtureData(i);
-                dc.SetTextForeground(wxColor(0, 0, 0));
-                if(i == sizeOfData - 1 && !currentPart->getFixtureList().at(currentFixture)->getIsSubmitted())
+                FixtureData* currentData = 0;
+                for(unsigned int i = 0; i < sizeOfData; i++)
                 {
-                    dc.SetTextForeground(wxColor(255, 0, 0));
+                    currentData = currentPart->getFixtureList().at(currentFixture)->getFixtureData(i);
+                    dc.SetTextForeground(wxColor(0, 0, 0));
+                    if(i == sizeOfData - 1 && !currentPart->getFixtureList().at(currentFixture)->getIsSubmitted())
+                    {
+                        dc.SetTextForeground(wxColor(255, 0, 0));
+                    }
+                    dc.DrawRotatedText(wxString(currentData->getSerialNumber()), angleTextLength + (i * rowWidth), serialNumberLength - 10, 90);
+                    dc.DrawCircle(angleTextLength + (rowWidth / 2) + (i * rowWidth), serialNumberLength + ((currentData->getAngleValue() - startingAngle) * (colHeight * divisions)), 3);
                 }
-                dc.DrawRotatedText(wxString(currentData->getSerialNumber()), angleTextLength + (i * rowWidth), serialNumberLength - 10, 90);
-                dc.DrawCircle(angleTextLength + (rowWidth / 2) + (i * rowWidth), serialNumberLength + ((currentData->getAngleValue() - startingAngle) * (colHeight * divisions)), 3);
             }
         }
     }
-
 }
 

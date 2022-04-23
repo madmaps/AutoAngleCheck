@@ -15,6 +15,7 @@ BEGIN_EVENT_TABLE(cMain, wxFrame)
     EVT_TEXT(100077, cMain::serialTextChange)
     EVT_BUTTON(100023, cMain::capture)
     EVT_BUTTON(100017, cMain::clear)
+    EVT_BUTTON(100014, cMain::submit)
     EVT_LISTBOX(100082, cMain::changePartCmd)
     EVT_LISTBOX(100027, cMain::changeFixtureCmd)
 END_EVENT_TABLE()
@@ -28,27 +29,54 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
 {
     currentFixtureData = 0;
     Part* newPart = new Part("42J2235", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 20, 70);
-    Fixture* newFixture0 = new Fixture("5428");
-    newFixture0->addDataPoint(new FixtureData("SN0025634", 45.323, "", std::chrono::system_clock::now()));
+    newPart->addFixture(new Fixture("5428"));
+    newPart->addFixture(new Fixture("4332"));
+    newPart->addFixture(new Fixture("5144"));
+    /*newFixture0->addDataPoint(new FixtureData("SN0025634", 45.323, "", std::chrono::system_clock::now()));
     newFixture0->addDataPoint(new FixtureData("SN0025635", 46.549, "", std::chrono::system_clock::now()));
     newFixture0->addDataPoint(new FixtureData("SN0025636", 41.881, "", std::chrono::system_clock::now()));
     newFixture0->addDataPoint(new FixtureData("SN0025637", 48.725, "", std::chrono::system_clock::now()));
-    newFixture0->addDataPoint(new FixtureData("SN0025638", 44.522, "", std::chrono::system_clock::now()));
-    newPart->addFixture(newFixture0);
-    Fixture* newFixture1 = new Fixture("4332");
-    newFixture1->addDataPoint(new FixtureData("SN0024634", 43.323, "", std::chrono::system_clock::now()));
+    newFixture0->addDataPoint(new FixtureData("SN0025638", 44.522, "", std::chrono::system_clock::now()));*/
+    /*newFixture1->addDataPoint(new FixtureData("SN0024634", 43.323, "", std::chrono::system_clock::now()));
     newFixture1->addDataPoint(new FixtureData("SN0025635", 47.549, "", std::chrono::system_clock::now()));
     newFixture1->addDataPoint(new FixtureData("SN0025666", 43.881, "", std::chrono::system_clock::now()));
     newFixture1->addDataPoint(new FixtureData("SN0025337", 49.725, "", std::chrono::system_clock::now()));
-    newFixture1->addDataPoint(new FixtureData("SN0022238", 42.522, "", std::chrono::system_clock::now()));
-    newPart->addFixture(newFixture1);
-
+    newFixture1->addDataPoint(new FixtureData("SN0022238", 42.522, "", std::chrono::system_clock::now()));*/
 
     Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 90);
+    newPart1->addFixture(new Fixture("4819"));
+    newPart1->addFixture(new Fixture("2217"));
+    newPart1->addFixture(new Fixture("5418"));
+    newPart1->addFixture(new Fixture("1222"));
+
     Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, FALSE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    newPart2->addFixture(new Fixture("4472"));
+    newPart2->addFixture(new Fixture("6819"));
+    newPart2->addFixture(new Fixture("4112"));
+    newPart2->addFixture(new Fixture("9631"));
+    newPart2->addFixture(new Fixture("2866"));
+
+
     Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    newPart3->addFixture(new Fixture("1171"));
+    newPart3->addFixture(new Fixture("9987"));
+
     Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    newPart4->addFixture(new Fixture("7319"));
+    newPart4->addFixture(new Fixture("3217"));
+    newPart4->addFixture(new Fixture("2870"));
+    newPart4->addFixture(new Fixture("7800"));
+    newPart4->addFixture(new Fixture("2468"));
+    newPart4->addFixture(new Fixture("9112"));
+    newPart4->addFixture(new Fixture("4376"));
+    newPart4->addFixture(new Fixture("0012"));
+
     Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 360);
+    newPart5->addFixture(new Fixture("3113"));
+    newPart5->addFixture(new Fixture("6629"));
+    newPart5->addFixture(new Fixture("8714"));
+
+
     listOfParts.push_back(newPart);
     listOfParts.push_back(newPart1);
     listOfParts.push_back(newPart2);
@@ -59,11 +87,13 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
 
 
 
-
     this->SetBackgroundColour(wxColour(200, 200, 200));
     wxBoxSizer* leftTopSizer = new wxBoxSizer(wxHORIZONTAL);
     drawPlane = new BasicDrawPlane(this);
-    drawPlane->addPart(listOfParts.at(0));
+    if(listOfParts.size() > 0)
+    {
+        drawPlane->addPart(listOfParts.at(0));
+    }
     leftTopSizer->Add(drawPlane, 0, wxEXPAND | wxALL, 10);
     wxSlider* sizeSlider = new wxSlider(this, 100001, 64, 8, 128, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL);
     leftTopSizer->Add(sizeSlider, 0, wxEXPAND | wxALL, 10);
@@ -72,7 +102,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxButton* captureButton = new wxButton(this, 100023, "CAPTURE");
     captureButton->SetMaxSize(wxSize(120, 50));
     captureButton->SetMinSize(wxSize(120, 50));
-    wxButton* submitButton = new wxButton(this, wxID_ANY, "SUBMIT");
+    wxButton* submitButton = new wxButton(this, 100014, "SUBMIT");
     submitButton->SetMaxSize(wxSize(120, 50));
     submitButton->SetMinSize(wxSize(120, 50));
     wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -133,7 +163,10 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
         partNumListBox->Insert(currentPart->getPartName(), count);
         count++;
     }
-    partNumListBox->SetSelection(0);
+    if(listOfParts.size() > 0)
+    {
+        partNumListBox->SetSelection(0);
+    }
 
     partNumSizer->Add(partNumEditSizer, 0, wxEXPAND | wxALL, 10);
     partNumSizer->Add(partNumListBox, 0, wxEXPAND | wxALL, 10);
@@ -175,7 +208,11 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
     topSizer->Add(sizer, 0, wxEXPAND | wxALL, 10);
     chart = new AngleChart(this);
-    chart->setPart(listOfParts.at(0));
+    if(listOfParts.size() > 0)
+    {
+        chart->setPart(listOfParts.at(0));
+        changePart();
+    }
     drawPlane->setAngleChart(chart);
     topSizer->Add(chart, 0, wxEXPAND | wxALL, 10);
 
@@ -208,9 +245,20 @@ cMain::~cMain()
     }
 }
 
+void cMain::submit(wxCommandEvent& evt)
+{
+    chart->submit();
+    chart->Refresh();
+    chart->Update();
+    drawPlane->clear();
+    currentFixtureData = 0;
+    serialNumTextCtrl->ChangeValue("");
+}
+
+
 void cMain::partTextChange(wxCommandEvent& evt)
 {
-    int index = 0;
+    int index = -1;
     unsigned int counter = 1;
     for(Part* searchPart : listOfParts)
     {
@@ -220,7 +268,10 @@ void cMain::partTextChange(wxCommandEvent& evt)
         }
         counter++;
     }
-    partNumListBox->SetSelection(index);
+    if(index >= 0)
+    {
+        partNumListBox->SetSelection(index);
+    }
     changePart();
 }
 
@@ -289,28 +340,44 @@ void cMain::changeFixtureCmd(wxCommandEvent& evt)
 
 void cMain::changePart()
 {
-    Part* newPart = listOfParts.at(partNumListBox->GetSelection());
-    drawPlane->addPart(newPart);
-    chart->setPart(newPart);
-    std::vector<Fixture*> listOfFixtures = newPart->getFixtureList();
-    fixtureListBox->Clear();
-    unsigned int count = 0;
-    for(Fixture* currentFixture : listOfFixtures)
+    if(listOfParts.size() > 0)
     {
-        fixtureListBox->Insert(currentFixture->getSerialNumber(), count);
-        count++;
-    }
-    if(listOfFixtures.size() > 0)
-    {
-        chart->setFixture(0);
-        fixtureListBox->SetSelection(0);
+        Part* newPart = listOfParts.at(partNumListBox->GetSelection());
+        drawPlane->addPart(newPart);
+        chart->setPart(newPart);
+        std::vector<Fixture*> listOfFixtures = newPart->getFixtureList();
+        fixtureListBox->Clear();
+        unsigned int count = 0;
+        for(Fixture* currentFixture : listOfFixtures)
+        {
+            fixtureListBox->Insert(currentFixture->getSerialNumber(), count);
+            count++;
+        }
+        if(listOfFixtures.size() > 0)
+        {
+            chart->setFixture(0);
+            fixtureListBox->SetSelection(0);
+        }
+        changeFixture();
     }
 }
 
 void cMain::changeFixture()
 {
-    drawPlane->setCurrentFixture(fixtureListBox->GetSelection());
-    chart->setFixture(fixtureListBox->GetSelection());
+    chart->clearUnsubmitted();
+    drawPlane->clear();
+    currentFixtureData = 0;
+    serialNumTextCtrl->ChangeValue("");
+    if(fixtureListBox->GetCount() > 0)
+    {
+        drawPlane->setCurrentFixture(fixtureListBox->GetSelection());
+        chart->setFixture(fixtureListBox->GetSelection());
+    }
+    else
+    {
+        drawPlane->setCurrentFixture(-1);
+        chart->setFixture(-1);
+    }
     chart->Refresh();
     chart->Update();
 }
