@@ -23,6 +23,7 @@ public:
     void setSampleSize(wxTextCtrl* inSampleSize);
     void setCurrentFixture(const int inCurrentFixture);
     void setAngleChart(AngleChart* inAngleChart);
+    void setSubmitButton(wxButton* inButton);
 
 
 private:
@@ -52,6 +53,7 @@ private:
     wxTextCtrl* angleAverage;
     wxTextCtrl* sampleSize;
     AngleChart* chart;
+    wxButton* submitButton;
     int currentFixture;
 
 

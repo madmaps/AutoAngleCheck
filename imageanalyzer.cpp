@@ -138,6 +138,36 @@ float ImageAnalyzer::getAngle()const
     return goodLowAngle;
 }
 
+float ImageAnalyzer::getAngleNonDCT()const
+{
+    std::vector<unsigned int> results;
+    float goodLowValue = 999999;
+    float goodLowAngle = 0;
+    float j = lowAngle;
+    while(j <= highAngle)
+    {
+        results = getVector(j);
+        unsigned int sumOfPixels = 0;
+        for(unsigned int currentPixel : results)
+        {
+            sumOfPixels += currentPixel;
+        }
+        float average = sumOfPixels / results.size();
+        float difference = 0;
+        for(unsigned int currentPixel : results)
+        {
+            difference += fabs((float)currentPixel - average);
+        }
+        if(difference < goodLowValue)
+        {
+            goodLowValue = difference;
+            goodLowAngle = j;
+        }
+        j += angleStep;
+    }
+    return goodLowAngle;
+}
+
 unsigned char ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigned int inY)const
 {
     float value = 0;

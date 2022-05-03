@@ -42,6 +42,8 @@ private:
     wxTextCtrl* angleAverage;
     wxTextCtrl* serialNumTextCtrl;
     FixtureData* currentFixtureData;
+    unsigned int widgetPadding;
+    wxButton* submitButton;
 
 
     DECLARE_EVENT_TABLE()

@@ -17,7 +17,7 @@ BasicDrawPlane::BasicDrawPlane(wxFrame* parent) : wxPanel(parent)
     imageHeight = 480;
     this->SetMinSize(wxSize(imageWidth,imageHeight));
     myImageAnal = new ImageAnalyzer();
-    myImageAnal->setAngleRange(0, 360);
+    myImageAnal->setAngleRange(0, 359);
     goodCamera = true;
     camera.open(0);
     camera.set(cv::CAP_PROP_FRAME_WIDTH , imageWidth);
@@ -100,6 +100,12 @@ void BasicDrawPlane::setCurrentFixture(const int inCurrentFixture)
     currentFixture = inCurrentFixture;
 }
 
+void BasicDrawPlane::setSubmitButton(wxButton* inButton)
+{
+    submitButton = inButton;
+}
+
+
 void BasicDrawPlane::moveCursor(wxMouseEvent& evt)
 {
     wxPoint currentPoint = evt.GetPosition();
@@ -114,7 +120,7 @@ void BasicDrawPlane::moveCursor(wxMouseEvent& evt)
 
 void BasicDrawPlane::paintNow()
 {
-    wxClientDC dc(this);
+    wxBufferedPaintDC dc(this);
     render(dc);
 }
 
@@ -129,6 +135,7 @@ void BasicDrawPlane::render(wxDC& dc)
     myImageAnal->setPiviotPoint(cursorX, cursorY);
     wxImage bitMap(frame.cols, frame.rows, frame.data, true);
     dc.DrawBitmap(wxBitmap(bitMap, 24), 0, 0);
+    float origonalAngleCapture = 0;
     if(captureMode && myPart != 0)
     {
         currentPen.SetWidth(25);
@@ -145,7 +152,10 @@ void BasicDrawPlane::render(wxDC& dc)
         myImageAnal->setAngleRange(myPart->getCaptureStartAngle(), myPart->getCaptureEndAngle());
         analyzeSize = myPart->getCaptureRadius();
         myImageAnal->setPiviotPoint(currentX, currentY);
-        float goodAngle = myImageAnal->getAngle();
+        //float goodAngle = myImageAnal->getAngle();
+        origonalAngleCapture = myImageAnal->getAngle();
+        float goodAngle = origonalAngleCapture;//myImageAnal->getAngleNonDCT();
+
         if(goodAngle > 180)
         {
             goodAngle -= 180;
@@ -192,7 +202,29 @@ void BasicDrawPlane::render(wxDC& dc)
             }
             angleAverage->ChangeValue(wxString::FromDouble(averageAngle, 2));
             sampleSize->ChangeValue(wxString::FromDouble((double)capturedAngles.size(),0));
+            if(capturedAngles.size() > 140)
+            {
+                if(averageAngle >= myPart->getLowGreenAngle() && averageAngle <= myPart->getHighGreenAngle())
+                {
+                    submitButton->SetBackgroundColour(wxColor(0,255,0));
+                    submitButton->Enable(true);
+                }
+                else if(averageAngle >= myPart->getLowYellowAngle() && averageAngle <= myPart->getHighYellowAngle())
+                {
+                    submitButton->SetBackgroundColour(wxColor(255, 255, 0));
+                    submitButton->Enable(true);
+                }
+                else
+                {
+                    submitButton->SetBackgroundColour(wxColour(255, 0, 0));
+                    submitButton->Enable(true);
+                }
+            }
         }
+    }
+    else
+    {
+        origonalAngleCapture = myImageAnal->getAngle();
     }
     currentPen.SetWidth(1);
     currentPen.SetColour(wxColour(0, 0 , 0));
@@ -207,7 +239,8 @@ void BasicDrawPlane::render(wxDC& dc)
     drawAngleRanges(dc);
 
 
-    drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize * 1.2, wxColour(255, 100, 0, 255));
+    //drawAngle(dc, myImageAnal->getAngle(), cursorX, cursorY, radiusSize * 1.2, wxColour(255, 100, 0, 255));
+    drawAngle(dc, origonalAngleCapture, cursorX, cursorY, radiusSize * 1.2, wxColour(255, 100, 0, 255));
 
     currentPen.SetWidth(2);
     currentPen.SetColour(wxColour(128, 128, 128));
@@ -224,7 +257,8 @@ void BasicDrawPlane::render(wxDC& dc)
     dc.SetFont(newFont);
     dc.SetTextForeground(wxColor(255, 100, 0));
     //float goodAngle = 360 * 2 - myImageAnal->getAngle();
-    float goodAngle = myImageAnal->getAngle();
+    //float goodAngle = myImageAnal->getAngle();
+    float goodAngle = origonalAngleCapture;
     if(myPart != 0)
     {
         if(myPart->getIsRadialSeal())

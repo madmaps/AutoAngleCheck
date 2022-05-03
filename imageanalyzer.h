@@ -23,6 +23,7 @@ public:
     float getStartAngle()const;
     float getEndAngle()const;
     float getAngle()const;
+    float getAngleNonDCT()const;
 
 private:
     unsigned char* currentImage;
