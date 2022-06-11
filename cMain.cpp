@@ -28,7 +28,7 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
     currentFixtureData = 0;
-    Part* newPart = new Part("42J2235", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart = new Part("42J2235", 43, 44, 50, 51, false, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart->addFixture(new Fixture("5428"));
     newPart->addFixture(new Fixture("4332"));
     newPart->addFixture(new Fixture("5144"));
@@ -43,13 +43,13 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     newFixture1->addDataPoint(new FixtureData("SN0025337", 49.725, "", std::chrono::system_clock::now()));
     newFixture1->addDataPoint(new FixtureData("SN0022238", 42.522, "", std::chrono::system_clock::now()));*/
 
-    Part* newPart1 = new Part("36C2154", 42, 45, 50, 52, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart1 = new Part("36C2154", 43, 44, 51, 52, false, 2.25, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart1->addFixture(new Fixture("4819"));
     newPart1->addFixture(new Fixture("2217"));
     newPart1->addFixture(new Fixture("5418"));
     newPart1->addFixture(new Fixture("1222"));
 
-    Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, FALSE, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart2 = new Part("81M2177", 30, 36, 40, 44, false, 4, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart2->addFixture(new Fixture("4472"));
     newPart2->addFixture(new Fixture("6819"));
     newPart2->addFixture(new Fixture("4112"));
@@ -57,11 +57,11 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     newPart2->addFixture(new Fixture("2866"));
 
 
-    Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart3 = new Part("89J2182", 15, 20, 25, 30, false, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart3->addFixture(new Fixture("1171"));
     newPart3->addFixture(new Fixture("9987"));
 
-    Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart4 = new Part("47I2019", 43, 44, 50, 51, false, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart4->addFixture(new Fixture("7319"));
     newPart4->addFixture(new Fixture("3217"));
     newPart4->addFixture(new Fixture("2870"));
@@ -71,7 +71,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     newPart4->addFixture(new Fixture("4376"));
     newPart4->addFixture(new Fixture("0012"));
 
-    Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, FALSE, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359);
+    Part* newPart5 = new Part("52A3081", 72, 75, 80, 82, false, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
     newPart5->addFixture(new Fixture("3113"));
     newPart5->addFixture(new Fixture("6629"));
     newPart5->addFixture(new Fixture("8714"));
@@ -224,6 +224,7 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50)
     timer = new RenderTimer(drawPlane);
     Show();
     timer->start();
+    drawPlane->setCameraPhysicalDimensions(0.386f, 0.327f);
 
 }
 

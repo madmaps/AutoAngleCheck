@@ -23,7 +23,8 @@ public:
          const unsigned int inCaptureRadius,
          const float inCaptureAngleStep,
          const float inCaptureAngleStart,
-         const float inCaptureAngleEnd);
+         const float inCaptureAngleEnd,
+         const unsigned int inMinCaptureAmount);
     ~Part();
     bool operator<(const Part& RHS);
 
@@ -44,6 +45,7 @@ public:
     float getCaptureAngleStep()const;
     float getCaptureStartAngle()const;
     float getCaptureEndAngle()const;
+    unsigned int getMinCaptureAmount()const;
     std::vector<Fixture*> getFixtureList()const;
     void addFixture(Fixture* inFixture);
 private:
@@ -64,6 +66,7 @@ private:
     float captureAngleStep;
     float captureStartAngle;
     float captureEndAngle;
+    unsigned int minCaptureAmount;
     std::vector<Fixture*> fixtureList;
 };
 

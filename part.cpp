@@ -23,7 +23,8 @@ Part::Part(const std::string inPartName,
            const unsigned int inCaptureRadius,
            const float inCaptureAngleStep,
            const float inCaptureAngleStart,
-           const float inCaptureAngleEnd) :
+           const float inCaptureAngleEnd,
+           const unsigned int inMinCaptureAmount) :
            partName(inPartName),
            lowYellowAngle(inLowYellowAngle),
            lowGreenAngle(inLowGreenAngle),
@@ -40,7 +41,8 @@ Part::Part(const std::string inPartName,
            captureRadius(inCaptureRadius),
            captureAngleStep(inCaptureAngleStep),
            captureStartAngle(inCaptureAngleStart),
-           captureEndAngle(inCaptureAngleEnd)
+           captureEndAngle(inCaptureAngleEnd),
+           minCaptureAmount(inMinCaptureAmount)
 
 {
 
@@ -148,6 +150,10 @@ float Part::getCaptureEndAngle()const
     return captureEndAngle;
 }
 
+unsigned int Part::getMinCaptureAmount()const
+{
+    return minCaptureAmount;
+}
 std::vector<Fixture*> Part::getFixtureList()const
 {
     return fixtureList;

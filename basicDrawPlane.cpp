@@ -164,7 +164,7 @@ void BasicDrawPlane::render(wxDC& dc)
         {
             float offset = myPart->getMylarRadius() - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
             float cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-            if(cursorX < (imageWidth / 2))
+            if(cursorX > (imageWidth / 2))
             {
                 cursorAngle = -cursorAngle;
             }
@@ -201,8 +201,8 @@ void BasicDrawPlane::render(wxDC& dc)
                 }
             }
             angleAverage->ChangeValue(wxString::FromDouble(averageAngle, 2));
-            sampleSize->ChangeValue(wxString::FromDouble((double)capturedAngles.size(),0));
-            if(capturedAngles.size() > 140)
+            sampleSize->ChangeValue(wxString::Format(wxT("%i (%i)"), capturedAngles.size(), myPart->getMinCaptureAmount()));
+            if(capturedAngles.size() > myPart->getMinCaptureAmount())
             {
                 if(averageAngle >= myPart->getLowGreenAngle() && averageAngle <= myPart->getHighGreenAngle())
                 {
@@ -334,7 +334,7 @@ void BasicDrawPlane::drawAngleRanges(wxDC& inDC)
         {
             float offset = myPart->getMylarRadius() - sqrt(pow(0 - toPhysicalX(cursorX) , 2) + pow(myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY), 2));
             cursorAngle = findDotProdAngle(0, myPart->getMylarRadius(), 0 - toPhysicalX(cursorX), myPart->getMylarRadius() - toPhysicalY(imageHeight - cursorY));
-            if(cursorX < 320)
+            if(cursorX > (imageWidth / 2))
             {
                 cursorAngle = -cursorAngle;
             }
