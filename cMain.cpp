@@ -28,9 +28,8 @@ bool cmpTwoParts(Part* partOne, Part* partTwo)
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, "Auto Angle Checker",wxPoint(50, 50), wxSize(1920, 1080))
 {
     currentFixtureData = 0;
-    Part* newPart = new Part("42J2235", 43, 44, 50, 51, false, 7, 0.5f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
-    newPart->addFixture(new Fixture("5428"));
-    newPart->addFixture(new Fixture("4332"));
+    Part* newPart = new Part("42J2235", 43, 44, 50, 51, true, 2.25f, 0.25f, 150, 240, 500, 240, 10, 64, 1, 0, 359, 140);
+    newPart->addFixture(new Fixture("5428"));    newPart->addFixture(new Fixture("4332"));
     newPart->addFixture(new Fixture("5144"));
     /*newFixture0->addDataPoint(new FixtureData("SN0025634", 45.323, "", std::chrono::system_clock::now()));
     newFixture0->addDataPoint(new FixtureData("SN0025635", 46.549, "", std::chrono::system_clock::now()));

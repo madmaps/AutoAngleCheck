@@ -15,11 +15,8 @@ public:
     void setAnalyzLength(const unsigned int inLength);
     void setAngleRange(const float inLowAngle, const float inHighAngle);
     void setAngleStep(const float inAngleStep);
-    float getAngleStep()const;
 
-    bool getIsRadialSeal()const;
-    float getPartMylarRadius()const;
-    float getPartYOffset()const;
+    float getAngleStep()const;
     float getStartAngle()const;
     float getEndAngle()const;
     float getAngle()const;
@@ -41,7 +38,7 @@ private:
 
     std::vector<unsigned int> getVector(const float inAngle)const;
     std::vector<float> DCT(std::vector<unsigned int>* inData)const;
-    unsigned char getPixelValue(const unsigned int inX, const unsigned int inY)const;
+    float getPixelValue(const unsigned int inX, const unsigned int inY)const;
     float rotatePoint_X(const float inX, const float inY, const float inAngle)const;
     float rotatePoint_Y(const float inX, const float inY, const float inAngle)const;
 

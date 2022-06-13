@@ -403,7 +403,7 @@ float BasicDrawPlane::toMylarAngle(float inAngle, float mylarRadius, float yOffs
     {
         inAngle -= 180;
     }
-    float correctValue = 0;
+    float correctValue = inAngle;
     bool negInAngle = false;
     if(inAngle > 90)
     {
@@ -414,7 +414,7 @@ float BasicDrawPlane::toMylarAngle(float inAngle, float mylarRadius, float yOffs
     {
         float R = 0;
         float decimalPoint = 10;
-        correctValue = 180 - inAngle;
+        //correctValue = 180 - inAngle;
         float K = mylarRadius - yOffset;
         while(decimalPoint > .0001)
         {
@@ -437,7 +437,7 @@ float BasicDrawPlane::toMylarAngle(float inAngle, float mylarRadius, float yOffs
     }
     else
     {
-        correctValue = (90 - (180 - (correctValue + inAngle)));
+        correctValue = (correctValue + inAngle) - 90;
     }
     return correctValue;
 }

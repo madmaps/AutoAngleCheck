@@ -72,35 +72,23 @@ std::vector<unsigned int> ImageAnalyzer::getVector(const float inAngle)const
     std::vector<unsigned int> returnVector;
     if(currentImage != nullptr)
     {
-        std::vector<float> SurroundingPoints = {0,0,0,0,0,0,0,0};
-        float pointX = 0;
-        float pointY = 0;
         float rotatedX = 0;
         float rotatedY = 0;
         for(int i = 0; i < analyzLength; i++)
         {
-            pointX = 0;
-            pointY = -i;
-            rotatedX = rotatePoint_X(pointX,pointY,inAngle);
-            rotatedY = rotatePoint_Y(pointX,pointY,inAngle);
+            rotatedY = -i;
+            rotatedX = rotatePoint_X(0, rotatedY,inAngle);
+            rotatedY = rotatePoint_Y(0, rotatedY,inAngle);
             rotatedX += piviotPoint_X;
             rotatedY += piviotPoint_Y;
-            SurroundingPoints[0] = floor(rotatedX);
-            SurroundingPoints[1] = ceil(rotatedY);
-            SurroundingPoints[2] = ceil(rotatedX);
-            SurroundingPoints[3] = ceil(rotatedY);
-            SurroundingPoints[4] = ceil(rotatedX);
-            SurroundingPoints[5] = floor(rotatedY);
-            SurroundingPoints[6] = floor(rotatedX);
-            SurroundingPoints[7] = floor(rotatedY);
-            float lowXValue = ((float)getPixelValue((int)SurroundingPoints[4],(int)SurroundingPoints[5]) -
-                              (float)getPixelValue((int)SurroundingPoints[6],(int)SurroundingPoints[7])) *
-                              (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[6],
-                              (int)SurroundingPoints[7]);
-            float highXValue = ((float)getPixelValue((int)SurroundingPoints[2],(int)SurroundingPoints[3]) -
-                              (float)getPixelValue((int)SurroundingPoints[0],(int)SurroundingPoints[1])) *
-                              (rotatedX - floor(rotatedX)) + (float)getPixelValue((int)SurroundingPoints[0],
-                              (int)SurroundingPoints[1]);
+            float lowXValue = (getPixelValue(ceil(rotatedX),floor(rotatedY)) -
+                              getPixelValue(floor(rotatedX),floor(rotatedY))) *
+                              (rotatedX - floor(rotatedX)) + getPixelValue(floor(rotatedX),
+                              floor(rotatedY));
+            float highXValue = (getPixelValue(ceil(rotatedX), ceil(rotatedY)) -
+                               getPixelValue(floor(rotatedX), ceil(rotatedY))) *
+                               (rotatedX - floor(rotatedX)) + getPixelValue(floor(rotatedX),
+                               ceil(rotatedY));
             float value = (highXValue - lowXValue) * (rotatedY - floor(rotatedY)) + lowXValue;
             returnVector.push_back(value);
         }
@@ -168,14 +156,15 @@ float ImageAnalyzer::getAngleNonDCT()const
     return goodLowAngle;
 }
 
-unsigned char ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigned int inY)const
+float ImageAnalyzer::getPixelValue(const unsigned int inX, const unsigned int inY)const
 {
     float value = 0;
     for(unsigned int i = 0; i < bitDepth; i++)
     {
-        value += currentImage[(inY * imageWidth * bitDepth) + (inX * bitDepth)];
+        value += currentImage[(inY * imageWidth * bitDepth) + (inX * bitDepth) + i];
     }
-    return (unsigned char)(value /= bitDepth);
+    value /= bitDepth;
+    return value;
 }
 
 
@@ -205,3 +194,4 @@ std::vector<float> ImageAnalyzer::DCT(std::vector<unsigned int>* inData)const
     }
     return returnData;
 }
+
